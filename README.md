@@ -32,6 +32,14 @@ envsubst < ../tap/resources/tap-values-tbsfull.in.yaml > ../tap/resources/tap-va
 tanzu package installed update tap --values-file ../tap/resources/tap-values-tbsfull.yaml -n tap-install
 ```
 
+* Deploy Ingress:
+```
+source .env
+envsubst < config/workload-httpproxy.in.yaml > config/workload-httpproxy.yaml
+sed -i "s/YOUR_SESSION_NAMESPACE/default/g" config/workload-httpproxy.yaml
+kubectl apply -f config/workload-httpproxy.yaml
+```
+
 * Deploy the app:
 ```
 tanzu apps workload create image-processor -f config/workload.yaml --yes
