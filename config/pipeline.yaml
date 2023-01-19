@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: ml-image-processing-
+spec:
+  entrypoint: train
+  templates:
+    - name: train
+      steps:
+          - - name: download_dataset
+              template: main
+              arguments:
+                parameters:
+                  - name: mlflow_entry
+                    value: "download_dataset"
+            - - name: train_model
+                template: main
+                arguments:
+                  parameters:
+                    - name: mlflow_entry
+                      value: "train_model"
+            - - name: evaluate_model
+                template: main
+                arguments:
+                  parameters:
+                    - name: mlflow_entry
+                      value: "evaluate_model"
+    - name: main
+      container:
+        image: oawofolu/ml-image-processor
+        command: [ "python", "app/main.py" ]
+        args: [ "mlflow_entry=download_dataset" ]

@@ -1,0 +1,13 @@
+name: ml_example
+
+entry_points:
+  main:
+    parameters:
+        msg1: {default: 'Initial test'}
+        firehose-proxy: {default: '{mlparams.firehose_proxy}'}
+    command: 'python -c "import app.main; app.main.process({firehose-proxy})"'
+  evaluate:
+    parameters:
+        msg1: {default: 'Evaluation test'}
+        build-regression-model: {default: '{mlparams.build_regression_model}'}
+    command: 'python -c "import app.main; app.main.evaluate({build-regression-model})"'

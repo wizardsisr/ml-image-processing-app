@@ -9,12 +9,17 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registr
 kubectl apply -f config/rbac.yaml
 ```
 
+* Update the default ClusterStore to include Python and Procfile buildpacks:
+```
+docker pull registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 (may need to accept EULA & login to registry.tanzu.vmware.com)
+docker tag registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 oawofolu/tanzu-python-buildpack-full-python:2.3.2
+docker push oawofolu/tanzu-python-buildpack-full-python:2.3.2
+kp clusterstore add default -b oawofolu/tanzu-python-buildpack-full-python:2.3.2
+```
+
 * Deploy the app:
 ```
-tanzu apps workload create image-processor -f config/workload.yaml \
-  --local-path . \
-  --source-image oawofolu/ml-image-processor-source \
-  --yes
+tanzu apps workload create image-processor -f config/workload.yaml --yes
 ```
 
 * Tail the logs:
