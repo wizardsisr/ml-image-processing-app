@@ -19,7 +19,6 @@ import tarfile
 import sys
 import importlib
 
-get_ipython().run_line_magic('pip', 'install hickle')
 import hickle as hkl
 import os
 import logging

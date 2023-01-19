@@ -32,5 +32,5 @@ spec:
           - name: mlflow_entry
       container:
         image: oawofolu/ml-image-processor
-        command: [ "python", "app/main.py" ]
+        command: [ "python", "app/analytics/home.py" ]
         args: [ "mlflow_entry={{inputs.parameters.mlflow_entry}}" ]

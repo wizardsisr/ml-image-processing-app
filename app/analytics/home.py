@@ -1,6 +1,6 @@
 import streamlit as st
 import logging
-from app.analytics import cifar_cnn
+import cifar_cnn
 from io import StringIO
 from PIL import Image
 
