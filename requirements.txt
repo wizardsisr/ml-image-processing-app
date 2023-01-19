@@ -31,7 +31,7 @@ gunicorn
 boto3
 tensorflow
 rsocket
-asyncio
+asyncio==3.4.3
 python-snappy
 mlflow==2.0.1
 filelock==3.9.0
