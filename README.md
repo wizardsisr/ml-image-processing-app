@@ -15,6 +15,13 @@ docker pull registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 (may n
 docker tag registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 oawofolu/tanzu-python-buildpack-full-python:2.3.2
 docker push oawofolu/tanzu-python-buildpack-full-python:2.3.2
 kp clusterstore add default -b oawofolu/tanzu-python-buildpack-full-python:2.3.2
+
+docker pull registry.tanzu.vmware.com/tanzu-procfile-buildpack/procfile:5.5.0
+docker tag registry.tanzu.vmware.com/tanzu-procfile-buildpack/procfile:5.5.0 oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
+docker push oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
+kp clusterstore add default -b oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
+
+kp clusterstore status default
 ```
 
 * Deploy the app:
