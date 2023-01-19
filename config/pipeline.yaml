@@ -7,12 +7,12 @@ spec:
   templates:
     - name: train
       steps:
-          - - name: download_dataset
+          - - name: upload_dataset
               template: main
               arguments:
                 parameters:
                   - name: mlflow_entry
-                    value: "download_dataset"
+                    value: "upload_dataset"
             - - name: train_model
                 template: main
                 arguments:

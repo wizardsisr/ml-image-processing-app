@@ -1,13 +1,20 @@
 name: ml_example
 
 entry_points:
-  main:
+  upload_dataset:
     parameters:
-        msg1: {default: 'Initial test'}
-        firehose-proxy: {default: '{mlparams.firehose_proxy}'}
-    command: 'python -c "import app.main; app.main.process({firehose-proxy})"'
-  evaluate:
+        dataset-name: {default: 'cifar10'}
+    command: 'python -c "from app.analytics import cifar_cnn; import mlflow; mlflow.end_run(); cifar_cnn.upload_dataset({dataset-name})"'
+  train_model:
     parameters:
-        msg1: {default: 'Evaluation test'}
-        build-regression-model: {default: '{mlparams.build_regression_model}'}
-    command: 'python -c "import app.main; app.main.evaluate({build-regression-model})"'
+        dataset-name: {default: 'cifar10'}
+        model-name: {default: 'cifar_cnn'}
+        model-flavor: {default: 'tensorflow'}
+        model-stage: {default: 'None'}
+        epochs: {type: float, default: 10}
+    command: 'python -c "from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset({dataset-name}); data=hkl.load(dataset_path); cifar_cnn.train_model('cifar_cnn', 'tensorflow', 'None', data, epochs={epochs})"'
+  evaluate_model:
+    parameters:
+        dataset-name: {default: 'cifar10'}
+    command: 'python -c "from app.analytics import cifar_cnn; cifar_cnn.upload_dataset({dataset-name})"'
+    evaluate_model(['Default'], 'cifar_cnn', 'tensorflow')

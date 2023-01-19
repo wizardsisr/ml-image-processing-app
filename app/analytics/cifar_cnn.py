@@ -1,14 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# <div class="alert alert-box alert-info">
-#     <h3>Image Processing via Convolutional Neural Networks</h3>
-#     <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-99.pdf" target="_blank">Original Paper by <b>Yann Lecun</b></a>
-#  </div>
-
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,11 +12,13 @@ import logging
 import pathlib
 import mlflow
 from mlflow import MlflowClient
+
 mlflow.set_tracking_uri('http://mlflow.tanzudatatap.ml')
 import warnings
 import tarfile
 import sys
 import importlib
+
 get_ipython().run_line_magic('pip', 'install hickle')
 import hickle as hkl
 import os
@@ -35,26 +26,22 @@ import logging
 import traceback
 from io import StringIO
 from PIL import Image
+
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 warnings.filterwarnings('ignore')
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-
 
 # ## Utilities
-
-# In[2]:
-
-
 def get_run_for_artifacts(active_run_id):
     runs = mlflow.search_runs(experiment_names=['Default'], filter_string="tags.mainartifacts='y'", max_results=1,
                               output_format='list')
     if len(runs):
         return runs[0].info.run_id
     else:
-        mlflow.set_tags({'mainartifacts':'y'})
+        mlflow.set_tags({'mainartifacts': 'y'})
         return active_run_id
+
 
 def get_root_run(active_run_id, experiment_names=['Default']):
     runs = mlflow.search_runs(experiment_names=experiment_names, filter_string="tags.runlevel='root'", max_results=1,
@@ -64,7 +51,7 @@ def get_root_run(active_run_id, experiment_names=['Default']):
         mlflow.set_tags({'mlflow.parentRunId': parent_run_id})
         return parent_run_id
     else:
-        mlflow.set_tags({'runlevel':'root'})
+        mlflow.set_tags({'runlevel': 'root'})
         return active_run_id
 
 
@@ -74,12 +61,8 @@ def get_current_run():
 
 
 # ## Upload dataset
-
-# In[3]:
-
-
 # Upload dataset to S3 via MlFlow
-def upload_dataset(dataset, dataset_url):
+def upload_dataset(dataset, dataset_url=None):
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
         artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
 
@@ -108,12 +91,7 @@ def upload_dataset(dataset, dataset_url):
             traceback.print_exc()
 
 
-mlflow.end_run()
-upload_dataset("cifar10", "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz")
-
-
 # ## Download DataSet
-
 def download_dataset(artifact, retries=2):
     last_run_id = get_current_run()
     root_run_id = get_root_run(last_run_id)
@@ -127,10 +105,11 @@ def download_dataset(artifact, retries=2):
             return artifact_path
         except Exception as e:
             if retries > 0:
-                download_dataset(artifact, retries=retries-1)
+                download_dataset(artifact, retries=retries - 1)
             else:
                 logging.error(f'Could not complete download for artifact {artifact} - error occurred: ', exc_info=True)
                 traceback.print_exc()
+
 
 def download_model(model_name, model_flavor, best_run_id, retries=2):
     with mlflow.start_run(run_name='download_model', nested=True) as active_run:
@@ -148,7 +127,7 @@ def download_model(model_name, model_flavor, best_run_id, retries=2):
         except Exception as e:
             if retries > 0:
                 logging.error(f"Could not download {model_name} - retrying...")
-                download_model(model_name, model_flavor, best_run_id, retries=retries-1)
+                download_model(model_name, model_flavor, best_run_id, retries=retries - 1)
             else:
                 logging.error(f'Could not complete download for model {model_name} - error occurred: ', exc_info=True)
                 traceback.print_exc()
@@ -180,7 +159,7 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
 
         # Plot metrics
         plt.plot(history.history['accuracy'], label='accuracy')
-        plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+        plt.plot(history.history['val_accuracy'], label='val_accuracy')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
         plt.ylim([0.5, 1])
@@ -188,30 +167,23 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         mlflow.log_artifact("cifar_cnn_accuracy.png")
 
         # Log Metrics
-        test_loss, test_acc = model.evaluate(data.get('test_data'),  data.get('test_labels'), verbose=2)
+        test_loss, test_acc = model.evaluate(data.get('test_data'), data.get('test_labels'), verbose=2)
         mlflow.log_metric('testing_loss', test_loss)
         mlflow.log_metric('testing_accuracy', test_acc)
         getattr(mlflow, model_flavor).autolog(log_models=False)
 
         # Log Model
-        #getattr(mlflow, model_flavor).log_model(model,
+        # getattr(mlflow, model_flavor).log_model(model,
         #                                        artifact_path=f'models:/{model_name}/{model_stage}',
         #                                        registered_model_name=model_name,
         #                                        await_registration_for=None)
-
 
         getattr(mlflow, model_flavor).log_model(model,
                                                 artifact_path=f'runs:/{active_run.info.run_id}/{model_name}',
                                                 registered_model_name=model_name,
                                                 await_registration_for=None)
 
-
         return model
-
-
-dataset_path = download_dataset('cifar10')
-data = hkl.load(dataset_path)
-train_model('cifar_cnn', 'tensorflow', 'None', data)
 
 
 # ## Evaluate Model
@@ -220,7 +192,7 @@ def evaluate_model(experiment_names, model_name, model_flavor):
     with mlflow.start_run(run_name='evaluate_model', nested=True) as active_run:
         runs = mlflow.search_runs(experiment_names=experiment_names,
                                   filter_string="attributes.run_name='train_model'",
-                                  order_by=['metrics.testing_accuracy DESC', 'metrics.testing_loss'],
+                                  order_by=['metrics.testing_accuracy DESC'],
                                   max_results=1,
                                   output_format='list')
         logging.info(f"Best run found is...{runs}")
@@ -235,14 +207,12 @@ def evaluate_model(experiment_names, model_name, model_flavor):
                 stage="Staging"
             )
 
-evaluate_model(['Default'], 'cifar_cnn', 'tensorflow')
-
 
 # ## Make Prediction
 
 def predict(img, model_stage):
     model = getattr(mlflow, 'tensorflow').load_model(f'models:/cifar_cnn/{model_stage}')
-    labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck' ]
+    labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
     img = img_to_array(img)
     img = img.reshape(1, 32, 32, 3)
@@ -251,12 +221,6 @@ def predict(img, model_stage):
 
     prediction_results = model.predict(img)
     prediction = labels[np.argmax(prediction_results)]
-    logging.info(f'Predictions in order...list={prediction_results}, index={np.argmax(prediction_results)}, prediction={prediction}')
+    logging.info(
+        f'Predictions in order...list={prediction_results}, index={np.argmax(prediction_results)}, prediction={prediction}')
     return prediction
-
-test_image = load_img('./test-images/bird7.png', target_size=(32, 32))
-predict(test_image, 'Staging')
-
-
-
-

@@ -3,7 +3,7 @@ kind: Workload
 metadata:
   name: image-processor
   labels:
-    apps.tanzu.vmware.com/workload-type: web
+    apps.tanzu.vmware.com/workload-type: worker
     app.kubernetes.io/part-of: image-processor
 spec:
   params:
