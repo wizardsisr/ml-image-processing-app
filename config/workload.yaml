@@ -6,6 +6,9 @@ metadata:
     apps.tanzu.vmware.com/workload-type: web
     app.kubernetes.io/part-of: image-processor
 spec:
+  params:
+    - name: clusterBuilder
+      value: base
   source:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git

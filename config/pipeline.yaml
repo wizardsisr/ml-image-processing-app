@@ -25,8 +25,12 @@ spec:
                   parameters:
                     - name: mlflow_entry
                       value: "evaluate_model"
+
     - name: main
+      inputs:
+        parameters:
+          - name: mlflow_entry
       container:
         image: oawofolu/ml-image-processor
         command: [ "python", "app/main.py" ]
-        args: [ "mlflow_entry=download_dataset" ]
+        args: [ "mlflow_entry={{inputs.parameters.mlflow_entry}}" ]
