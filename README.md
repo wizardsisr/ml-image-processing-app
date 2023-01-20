@@ -6,7 +6,21 @@ source .env
 tanzu secret registry add regsecret --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes  
 tanzu secret registry add tap-registry --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"},{"name": "tap-registry"}],"secrets":[{"name": "tap-registry"}]}'
-kubectl apply -f config/rbac.yaml
+```
+
+* Set up Argo:
+```
+kubectl create ns argo
+kubectl apply -f config/argo-workflow.yaml -nargo
+envsubst < config/argo-workflow-http-proxy.in.yaml > config/argo-workflow-http-proxy.yaml
+kubectl apply -f config/argo-workflow-http-proxy.yaml -nargo
+kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=argo:default -n argo
+kubectl apply -f config/argo-workflow-rbac.yaml -nargo
+```
+
+* Login to Argo - copy the token from here:
+```
+kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath='{.items[0].metadata.name}') -- argo auth token
 ```
 
 * Include the necessary buildpack dependencies:
@@ -23,13 +37,6 @@ tanzu package installed update tap --values-file ../tap/resources/tap-values-tbs
 ```
 
 ### Deploy the Analytics App
-* Deploy Ingress:
-```
-source .env
-envsubst < config/workload-httpproxy.in.yaml > config/workload-httpproxy.yaml
-sed -i "s/YOUR_SESSION_NAMESPACE/default/g" config/workload-httpproxy.yaml
-kubectl apply -f config/workload-httpproxy.yaml
-```
 
 * Deploy the app:
 ```
@@ -54,12 +61,12 @@ tanzu apps workload delete image-processor --yes
 ### Deploy the Training Pipeline
 * Deploy the pipeline:
 ```
-kapp deploy -a image-procesor-pipeline -f config/cifar/pipeline_app.yaml --logs
+kapp deploy -a image-procesor-pipeline -f config/cifar/pipeline_app.yaml --logs -y  -nargo
 ```
 
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
 
 * To delete the pipeline:
 ```
-kapp delete -a image-procesor-pipeline 
+kapp delete -a image-procesor-pipeline -y -nargo
 ```
