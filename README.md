@@ -9,7 +9,7 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registr
 kubectl apply -f config/rbac.yaml
 ```
 
-* Update the default ClusterStore to include Python and Procfile buildpacks:
+* Include the necessary buildpack dependencies:
 ```
 export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:${TBS_VERSION} \
@@ -22,6 +22,7 @@ envsubst < ../tap/resources/tap-values-tbsfull.in.yaml > ../tap/resources/tap-va
 tanzu package installed update tap --values-file ../tap/resources/tap-values-tbsfull.yaml -n tap-install
 ```
 
+### Deploy the Analytics App
 * Deploy Ingress:
 ```
 source .env
@@ -48,4 +49,17 @@ tanzu apps workload get image-processor #should yield image-processor.default.<y
 * To delete the app:
 ```
 tanzu apps workload delete image-processor --yes
+```
+
+### Deploy the Training Pipeline
+* Deploy the pipeline:
+```
+kapp deploy -a image-procesor-pipeline -f config/cifar/pipeline_app.yaml --logs
+```
+
+* View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
+
+* To delete the pipeline:
+```
+kapp delete -a image-procesor-pipeline 
 ```
