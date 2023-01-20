@@ -1,3 +1,5 @@
+#@ load("@ytt:data", "data")
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
@@ -13,24 +15,33 @@ spec:
                 parameters:
                   - name: mlflow_entry
                     value: "upload_dataset"
+                  - name: mlflow_stage
+                    value: #@ data.values.model_stage
+
             - - name: train_model
                 template: main
                 arguments:
                   parameters:
                     - name: mlflow_entry
                       value: "train_model"
+                    - name: mlflow_stage
+                      value: #@ data.values.model_stage
+
             - - name: evaluate_model
                 template: main
                 arguments:
                   parameters:
                     - name: mlflow_entry
                       value: "evaluate_model"
+                    - name: mlflow_stage
+                      value: #@ data.values.model_stage
 
     - name: main
       inputs:
         parameters:
           - name: mlflow_entry
+          - name: mlflow_stage
       container:
         image: oawofolu/ml-image-processor
         command: [ "python", "app/analytics/home.py" ]
-        args: [ "mlflow_entry={{inputs.parameters.mlflow_entry}}" ]
+        args: [ "mlflow_entry={{inputs.parameters.mlflow_entry}} mlflow_stage={{inputs.parameters.mlflow_stage}}" ]

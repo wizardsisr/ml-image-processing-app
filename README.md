@@ -11,16 +11,6 @@ kubectl apply -f config/rbac.yaml
 
 * Update the default ClusterStore to include Python and Procfile buildpacks:
 ```
-# docker pull registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 (may need to accept EULA & login to registry.tanzu.vmware.com)
-# docker tag registry.tanzu.vmware.com/tanzu-python-buildpack/python:2.3.2 oawofolu/tanzu-python-buildpack-full-python:2.3.2
-# docker push oawofolu/tanzu-python-buildpack-full-python:2.3.2
-# kp clusterstore add default -b oawofolu/tanzu-python-buildpack-full-python:2.3.2
-
-# docker pull registry.tanzu.vmware.com/tanzu-procfile-buildpack/procfile:5.5.0
-# docker tag registry.tanzu.vmware.com/tanzu-procfile-buildpack/procfile:5.5.0 oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
-# docker push oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
-# kp clusterstore add default -b oawofolu/tanzu-procfile-buildpack-full-procfile:5.5.0
-
 export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:${TBS_VERSION} \
 --to-repo index.docker.io/oawofolu/tbs-full-deps

@@ -12,18 +12,18 @@ import logging
 import pathlib
 import mlflow
 from mlflow import MlflowClient
-
-mlflow.set_tracking_uri('http://mlflow.tanzudatatap.ml')
 import warnings
 import tarfile
 import sys
 import importlib
-
 import hickle as hkl
 import os
+import time
 import logging
 import traceback
 from io import StringIO
+import http
+import requests
 from PIL import Image
 
 logging.basicConfig()
@@ -33,7 +33,8 @@ warnings.filterwarnings('ignore')
 
 # ## Utilities
 def get_run_for_artifacts(active_run_id):
-    runs = mlflow.search_runs(experiment_names=['Default'], filter_string="tags.mainartifacts='y'", max_results=1,
+    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
+    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.mainartifacts='y'", max_results=1,
                               output_format='list')
     if len(runs):
         return runs[0].info.run_id
@@ -42,8 +43,9 @@ def get_run_for_artifacts(active_run_id):
         return active_run_id
 
 
-def get_root_run(active_run_id, experiment_names=['Default']):
-    runs = mlflow.search_runs(experiment_names=experiment_names, filter_string="tags.runlevel='root'", max_results=1,
+def get_root_run(active_run_id):
+    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
+    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
                               output_format='list')
     if len(runs):
         parent_run_id = runs[0].info.run_id
@@ -60,8 +62,10 @@ def get_current_run():
 
 
 # ## Upload dataset
+
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
+    experiment_id = mlflow.get_experiment_by_name(os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default')
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
         artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
 
@@ -80,7 +84,9 @@ def upload_dataset(dataset, dataset_url=None):
                   'test_data': test_data,
                   'training_labels': training_labels,
                   'test_labels': test_labels},
-                 dataset, mode='w')
+                 dataset,
+                 compression='gzip',
+                 mode='w')
 
         try:
             client.log_artifact(artifact_run_id, dataset)
@@ -91,23 +97,25 @@ def upload_dataset(dataset, dataset_url=None):
 
 
 # ## Download DataSet
-def download_dataset(artifact, retries=2):
-    last_run_id = get_current_run()
-    root_run_id = get_root_run(last_run_id)
-    with mlflow.start_run(run_name='download_dataset', nested=True) as active_run:
-        artifact_run_id = get_run_for_artifacts(last_run_id)
-        download_path = 'downloads'
-        artifact_uri = f'runs:/{artifact_run_id}/{artifact}'
-        try:
-            artifact_path = mlflow.artifacts.download_artifacts(artifact_uri=artifact_uri,
-                                                                dst_path=download_path)
-            return artifact_path
-        except Exception as e:
-            if retries > 0:
-                download_dataset(artifact, retries=retries - 1)
-            else:
-                logging.error(f'Could not complete download for artifact {artifact} - error occurred: ', exc_info=True)
-                traceback.print_exc()
+def download_dataset(artifact):
+    try:
+        with mlflow.start_run(run_name='download_dataset', nested=True) as active_run:
+            artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
+            with mlflow.start_run(run_id=artifact_run_id, nested='True'):
+                uri = mlflow.get_artifact_uri(artifact_path=artifact)
+                uri = uri.replace('mlflow-artifacts:', f'{os.environ.get("MLFLOW_S3_ENDPOINT_URL")}/mlflow/artifacts')
+                # uri = uri.replace('mlflow-artifacts:',f'http:/{mlflow.get_tracking_uri()}/api/2.0/mlflow-artifacts/artifacts')
+                logging.info(f'Download uri: {uri}')
+                req = requests.get(uri)
+                with open(f'downloads/{artifact}', 'wb') as f:
+                    f.write(req.content)
+                    logging.info(f'{artifact} download complete.')
+                return f'downloads/{artifact}'
+    except http.client.IncompleteRead as icread:
+        logging.info(f'Incomplete read...{icread}')
+    except Exception as e:
+        logging.error(f'Could not complete upload for run id - error occurred: ', exc_info=True)
+        traceback.print_exc()
 
 
 def download_model(model_name, model_flavor, best_run_id, retries=2):
@@ -119,13 +127,14 @@ def download_model(model_name, model_flavor, best_run_id, retries=2):
             if len(versions) and versions[0].current_stage.lower() != 'production':
                 version = versions[0].version
                 model = getattr(mlflow, model_flavor).load_model(f'models:/{model_name}/{version}')
-                return (model, version)
+                return model, version
             else:
                 logging.info(f"No suitable candidate model found for {model_name}...")
                 return None
         except Exception as e:
             if retries > 0:
                 logging.error(f"Could not download {model_name} - retrying...")
+                time.sleep(1)
                 download_model(model_name, model_flavor, best_run_id, retries=retries - 1)
             else:
                 logging.error(f'Could not complete download for model {model_name} - error occurred: ', exc_info=True)
@@ -133,28 +142,27 @@ def download_model(model_name, model_flavor, best_run_id, retries=2):
 
 
 # ## Train Model
-
-
 def train_model(model_name, model_flavor, model_stage, data, epochs=10):
     with mlflow.start_run(run_name='train_model', nested=True) as active_run:
         # Build and Compile Model
-        model = models.Sequential()
-        model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
-        model.add(layers.MaxPooling2D((2, 2)))
-        model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-        model.add(layers.MaxPooling2D((2, 2)))
-        model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-        model.add(layers.Flatten())
-        model.add(layers.Dense(64, activation='relu'))
-        model.add(layers.Dense(10))
-        model.summary()
-        model.compile(optimizer='adam',
-                      loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy'])
+        with tensorflow.device('/CPU:0'):  # Place tensors on the CPU
+            model = models.Sequential()
+            model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+            model.add(layers.MaxPooling2D((2, 2)))
+            model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+            model.add(layers.MaxPooling2D((2, 2)))
+            model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+            model.add(layers.Flatten())
+            model.add(layers.Dense(64, activation='relu'))
+            model.add(layers.Dense(10))
+            model.summary()
+            model.compile(optimizer='adam',
+                          loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                          metrics=['accuracy'])
 
-        # Fit model
-        history = model.fit(data.get('training_data'), data.get('training_labels'), epochs=epochs,
-                            validation_data=(data.get('test_data'), data.get('test_labels')))
+            # Fit model
+            history = model.fit(data.get('training_data'), data.get('training_labels'), epochs=epochs,
+                                validation_data=(data.get('test_data'), data.get('test_labels')))
 
         # Plot metrics
         plt.plot(history.history['accuracy'], label='accuracy')
@@ -171,12 +179,6 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         mlflow.log_metric('testing_accuracy', test_acc)
         getattr(mlflow, model_flavor).autolog(log_models=False)
 
-        # Log Model
-        # getattr(mlflow, model_flavor).log_model(model,
-        #                                        artifact_path=f'models:/{model_name}/{model_stage}',
-        #                                        registered_model_name=model_name,
-        #                                        await_registration_for=None)
-
         getattr(mlflow, model_flavor).log_model(model,
                                                 artifact_path=f'runs:/{active_run.info.run_id}/{model_name}',
                                                 registered_model_name=model_name,
@@ -186,10 +188,11 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
 
 
 # ## Evaluate Model
+def evaluate_model(model_name, model_flavor):
+    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
 
-def evaluate_model(experiment_names, model_name, model_flavor):
     with mlflow.start_run(run_name='evaluate_model', nested=True) as active_run:
-        runs = mlflow.search_runs(experiment_names=experiment_names,
+        runs = mlflow.search_runs(experiment_names=[experiment_name],
                                   filter_string="attributes.run_name='train_model'",
                                   order_by=['metrics.testing_accuracy DESC'],
                                   max_results=1,
@@ -208,9 +211,8 @@ def evaluate_model(experiment_names, model_name, model_flavor):
 
 
 # ## Make Prediction
-
-def predict(img, model_stage):
-    model = getattr(mlflow, 'tensorflow').load_model(f'models:/cifar_cnn/{model_stage}')
+def predict(img, model_name, model_stage):
+    model = getattr(mlflow, 'tensorflow').load_model(f'models:/{model_name}/{model_stage}')
     labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
     img = img_to_array(img)
