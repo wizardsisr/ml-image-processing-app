@@ -47,7 +47,7 @@ spec:
           - python
           - ./app/analytics/home.py
         args:
-          - mlflow_entry={{inputs.parameters.mlflow_entry}}
-          - mlflow_stage={{inputs.parameters.mlflow_stage}}
-          - git_repo='https://github.com/agapebondservant/ml-image-processing-app.git'
-          - experiment_name='convolutional_neural_network'
+          - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
+          - mlflow_stage="{{inputs.parameters.mlflow_stage}}"
+          - git_repo="https://github.com/agapebondservant/ml-image-processing-app.git"
+          - experiment_name="convolutional_neural_network"
