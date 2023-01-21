@@ -40,5 +40,5 @@ spec:
           - name: mlflow_stage
       container:
         image: oawofolu/ml-image-processor
-        command: [sh, -c]
-        args: ['python --version']
+        command: [python]
+        args: ['--version']
