@@ -41,4 +41,4 @@ spec:
       container:
         image: oawofolu/ml-image-processor
         command: [sh, -c]
-        args: ['ls -ltr /usr/bin']
+        args: ['ls -ltr /layers/tanzu-buildpacks_cpython/cpython']
