@@ -41,4 +41,4 @@ spec:
       container:
         image: oawofolu/ml-image-processor
         command: [sh, -c]
-        args: [env]
+        args: ['ls -ltr /usr/bin']
