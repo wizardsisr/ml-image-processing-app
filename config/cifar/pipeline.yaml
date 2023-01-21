@@ -3,38 +3,38 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  name: ml-image-processing
+  name: ml-image-processing-workflow
 spec:
   entrypoint: train
   templates:
     - name: train
       steps:
-          - - name: upload_dataset
+        - - name: upload_dataset
+            template: main
+            arguments:
+              parameters:
+                - name: mlflow_entry
+                  value: "upload_dataset"
+                - name: mlflow_stage
+                  value: #@ data.values.model_stage
+
+          - - name: train_model
               template: main
               arguments:
                 parameters:
                   - name: mlflow_entry
-                    value: "upload_dataset"
+                    value: "train_model"
                   - name: mlflow_stage
                     value: #@ data.values.model_stage
 
-            - - name: train_model
-                template: main
-                arguments:
-                  parameters:
-                    - name: mlflow_entry
-                      value: "train_model"
-                    - name: mlflow_stage
-                      value: #@ data.values.model_stage
-
-            - - name: evaluate_model
-                template: main
-                arguments:
-                  parameters:
-                    - name: mlflow_entry
-                      value: "evaluate_model"
-                    - name: mlflow_stage
-                      value: #@ data.values.model_stage
+          - - name: evaluate_model
+              template: main
+              arguments:
+                parameters:
+                  - name: mlflow_entry
+                    value: "evaluate_model"
+                  - name: mlflow_stage
+                    value: #@ data.values.model_stage
 
     - name: main
       inputs:
@@ -44,4 +44,4 @@ spec:
       container:
         image: oawofolu/ml-image-processor
         command: [python, ./app/analytics/home.py]
-        args: ["mlflow_entry=\"{{ inputs.parameters.mlflow_entry }}\"", "mlflow_stage=\"{{ inputs.parameters.mlflow_stage }}\"", git_repo=https://github.com/agapebondservant/ml-image-processing-app.git, environment_name=convolutional_neural_network ]
+        args: ["mlflow_entry=\"{{ inputs.parameters.mlflow_entry }}\"", "mlflow_stage=\"{{ inputs.parameters.mlflow_stage }}\"", git_repo="https://github.com/agapebondservant/ml-image-processing-app.git", environment_name=convolutional_neural_network ]
