@@ -40,5 +40,5 @@ spec:
           - name: mlflow_stage
       container:
         image: oawofolu/ml-image-processor
-        command: [ /layers/tanzu-buildpacks_cpython/cpython/bin/python, ./app/main.py ]
-        args: [ "mlflow_entry=\'{{ inputs.parameters.mlflow_entry }}\'", "mlflow_stage=\'{{ inputs.parameters.mlflow_stage }}\'", git_repo='https://github.com/agapebondservant/ml-image-processing-app.git', environment_name=convolutional_neural_network ]
+        command: [sh, -c]
+        args: ['locate libpython3.10.so.1.0']
