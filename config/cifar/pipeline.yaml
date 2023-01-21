@@ -40,4 +40,4 @@ spec:
           - name: mlflow_stage
       container:
         image: oawofolu/ml-image-processor
-        command: [echo, "$PATH"]
+        command: [echo, $PATH]
