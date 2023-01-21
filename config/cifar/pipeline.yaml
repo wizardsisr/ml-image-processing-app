@@ -9,7 +9,7 @@ spec:
   templates:
     - name: train
       steps:
-        - - name: upload_dataset
+        - - name: upload-dataset
             template: main
             arguments:
               parameters:
@@ -17,7 +17,7 @@ spec:
                   value: "upload_dataset"
                 - name: mlflow_stage
                   value: #@ data.values.model_stage
-        - - name: train_model
+        - - name: train-model
             template: main
             arguments:
               parameters:
@@ -25,7 +25,7 @@ spec:
                   value: "train_model"
                 - name: mlflow_stage
                   value: #@ data.values.model_stage
-        - - name: evaluate_model
+        - - name: evaluate-model
             template: main
             arguments:
               parameters:
