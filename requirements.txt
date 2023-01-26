@@ -37,3 +37,4 @@ mlflow==2.0.1
 filelock==3.9.0
 pyarrow<7.0.0
 hickle
+python-multipart

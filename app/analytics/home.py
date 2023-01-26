@@ -1,8 +1,7 @@
 import streamlit as st
-import logging
-import cifar_cnn
-from io import StringIO
 from PIL import Image
+from app.analytics import config, cifar_cnn
+from streamlit_autorefresh import st_autorefresh
 
 # Initializations
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -49,8 +48,13 @@ with tab1:
         with col1:
             st.image(cifar_img, width=200)
         with col2:
-            st.markdown("Predicted Label:<br/> <span class='predictedlabel'>None</span>",
-                        unsafe_allow_html=True)
+            prediction = await cifar_cnn.predict(cifar_img, config.model_name, config.model_stage)
+            if prediction:
+                st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
+                            unsafe_allow_html=True)
+            else:
+                st.header('Please wait...')
+                st.text('(Training is in progress)')
 
 # MRI
 with tab2:
@@ -61,5 +65,14 @@ with tab2:
         with col1:
             st.image(mri_img, width=200)
         with col2:
-            st.markdown("Predicted Label:<br/> <span class='predictedlabel'>None</span>",
-                        unsafe_allow_html=True)
+            prediction = await cifar_cnn.predict(mri_img, config.model_name, config.model_stage)
+            if prediction:
+                st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
+                            unsafe_allow_html=True)
+            else:
+                st.header('Please wait...')
+                st.text('(Training is in progress)')
+
+
+# Refresh the screen at a configured interval
+st_autorefresh(interval=config.refresh_interval * 1000, key="anomalyrefresher")

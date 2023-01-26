@@ -212,7 +212,12 @@ def evaluate_model(model_name, model_flavor):
 
 # ## Make Prediction
 def predict(img, model_name, model_stage):
-    model = getattr(mlflow, 'tensorflow').load_model(f'models:/{model_name}/{model_stage}')
+    try:
+        model = getattr(mlflow, 'tensorflow').load_model(f'models:/{model_name}/{model_stage}')
+    except Exception as e:
+        logging.info('Could not load model at this time.')
+        return None
+
     labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
     img = img_to_array(img)
