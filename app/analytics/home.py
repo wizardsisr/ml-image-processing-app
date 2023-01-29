@@ -48,7 +48,7 @@ with tab1:
         with col1:
             st.image(cifar_img, width=200)
         with col2:
-            prediction = await cifar_cnn.predict(cifar_img, config.model_name, config.model_stage)
+            prediction = cifar_cnn.predict(cifar_img, config.model_name, config.model_stage)
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
