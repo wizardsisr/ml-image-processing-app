@@ -10,6 +10,7 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registr
 
 * Set up Argo:
 ```
+source .env
 kubectl create ns argo
 kubectl apply -f config/argo-workflow.yaml -nargo
 envsubst < config/argo-workflow-http-proxy.in.yaml > config/argo-workflow-http-proxy.yaml

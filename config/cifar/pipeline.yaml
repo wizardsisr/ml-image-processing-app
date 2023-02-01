@@ -38,6 +38,10 @@ spec:
         parameters:
           - name: mlflow_entry
           - name: mlflow_stage
+          - name: git_repo
+            value: #@ data.values.git_repo
+          - name: experiment_name
+            value: #@ data.values.experiment_name
       container:
         image: oawofolu/ml-image-processor
         command: [python]
