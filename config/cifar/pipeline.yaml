@@ -49,5 +49,5 @@ spec:
           - ./app/main.py
           - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
           - mlflow_stage="{{inputs.parameters.mlflow_stage}}"
-          - git_repo=https://github.com/agapebondservant/ml-image-processing-app.git
-          - environment_name=convolutional_neural_network
+          - git_repo="https://github.com/agapebondservant/ml-image-processing-app.git"
+          - environment_name="convolutional_neural_network"
