@@ -42,6 +42,8 @@ spec:
             value: #@ data.values.git_repo
           - name: experiment_name
             value: #@ data.values.experiment_name
+          - name: environment_name
+            value: #@ data.values.environment_name
       container:
         image: oawofolu/ml-image-processor
         command: [python]
@@ -49,5 +51,6 @@ spec:
           - ./app/main.py
           - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
           - mlflow_stage="{{inputs.parameters.mlflow_stage}}"
-          - git_repo="https://github.com/agapebondservant/ml-image-processing-app.git"
-          - experiment_name="convolutional_neural_network"
+          - git_repo="{{inputs.parameters.git_repo}}"
+          - experiment_name="{{inputs.parameters.experiment_name}}"
+          - environment_name="{{inputs.parameters.environment_name}}"

@@ -104,7 +104,6 @@ def download_dataset(artifact):
             with mlflow.start_run(run_id=artifact_run_id, nested='True'):
                 uri = mlflow.get_artifact_uri(artifact_path=artifact)
                 uri = uri.replace('mlflow-artifacts:', f'{os.environ.get("MLFLOW_S3_ENDPOINT_URL")}/mlflow/artifacts')
-                # uri = uri.replace('mlflow-artifacts:',f'http:/{mlflow.get_tracking_uri()}/api/2.0/mlflow-artifacts/artifacts')
                 logging.info(f'Download uri: {uri}')
                 req = requests.get(uri)
                 download_path = f'downloads/{artifact}'
@@ -182,7 +181,8 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         getattr(mlflow, model_flavor).autolog(log_models=False)
 
         getattr(mlflow, model_flavor).log_model(model,
-                                                artifact_path=f'runs:/{active_run.info.run_id}/{model_name}',
+                                                # artifact_path=f'runs:/{active_run.info.run_id}/{model_name}',
+                                                artifact_path=model_name,
                                                 registered_model_name=model_name,
                                                 await_registration_for=None)
 
@@ -194,17 +194,16 @@ def evaluate_model(model_name, model_flavor):
     experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
 
     with mlflow.start_run(run_name='evaluate_model', nested=True) as active_run:
-        runs = mlflow.search_runs(experiment_names=[experiment_name],
-                                  filter_string="attributes.run_name='train_model'",
-                                  order_by=['metrics.testing_accuracy DESC'],
-                                  max_results=1,
-                                  output_format='list')
-        logging.info(f"Best run found is...{runs}")
-        best_run_id = runs[0].info.run_id if len(runs) else None
+        best_runs = mlflow.search_runs(experiment_names=[experiment_name],
+                                       filter_string="attributes.run_name='train_model'",
+                                       order_by=['metrics.testing_accuracy DESC'],
+                                       max_results=1,
+                                       output_format='list')
+        best_run_id = best_runs[0].info.run_id if len(best_runs) else None
+
         if best_run_id is not None:
             (model, version) = download_model(model_name, model_flavor, best_run_id)
-            logging.info(f"Found best model: {model}")
-
+            logging.info(f"Found best model for experiments {experiment_name}, model name {model_name} : {model}")
             MlflowClient().transition_model_version_stage(
                 name=model_name,
                 version=version,
