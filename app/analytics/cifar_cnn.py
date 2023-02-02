@@ -107,10 +107,12 @@ def download_dataset(artifact):
                 # uri = uri.replace('mlflow-artifacts:',f'http:/{mlflow.get_tracking_uri()}/api/2.0/mlflow-artifacts/artifacts')
                 logging.info(f'Download uri: {uri}')
                 req = requests.get(uri)
-                with open(f'downloads/{artifact}', 'wb') as f:
+                download_path = f'downloads/{artifact}'
+                os.makedirs(os.path.dirname(f'downloads/{artifact}'), exist_ok=True)
+                with open(download_path, 'wb') as f:
                     f.write(req.content)
                     logging.info(f'{artifact} download complete.')
-                return f'downloads/{artifact}'
+                return download_path
     except http.client.IncompleteRead as icread:
         logging.info(f'Incomplete read...{icread}')
     except Exception as e:
