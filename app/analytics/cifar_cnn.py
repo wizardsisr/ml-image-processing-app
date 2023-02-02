@@ -73,6 +73,7 @@ def upload_dataset(dataset, dataset_url=None):
         os.environ['MLFLOW_HTTP_REQUEST_TIMEOUT'] = '3600'
 
         logging.info(f'Artifact run id is {artifact_run_id}')
+        logging.info(f"MLFlow Tracking URI is {os.environ['MLFLOW_TRACKING_URI']}")
 
         client = MlflowClient()
 
