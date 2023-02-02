@@ -66,7 +66,7 @@ def get_current_run():
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
     experiment_id = mlflow.get_experiment_by_name(os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default')
-    with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
+    with mlflow.start_run(run_name='upload_dataset') as active_run:
         artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
 
         mlflow.environment_variables.MLFLOW_HTTP_REQUEST_TIMEOUT = '3600'
