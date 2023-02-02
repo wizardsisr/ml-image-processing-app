@@ -18,4 +18,4 @@ entry_points:
         dataset-name: {default: "cifar10"}
         model-name: {default: "cifar_cnn"}
         model-flavor: {default: "tensorflow"}
-    command: 'python -c "from app.analytics import cifar_cnn; evaluate_model(\"{model-name}\", \"{model-flavor}\")"'
+    command: 'python -c "from app.analytics import cifar_cnn; cifar_cnn.evaluate_model(\"{model-name}\", \"{model-flavor}\")"'
