@@ -12,8 +12,10 @@ entry_points:
         model-flavor: {default: 'tensorflow'}
         model-stage: {default: 'None'}
         epochs: {type: float, default: 10}
-    command: 'python -c "from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset({dataset-name}); data=hkl.load(dataset_path); cifar_cnn.train_model('cifar_cnn', 'tensorflow', 'None', data, epochs={epochs})"'
+    command: 'python -c "from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset({dataset-name}); data=hkl.load(dataset_path); cifar_cnn.train_model({model-name}, {model-flavor}, {model-stage}, data, epochs={epochs})"'
   evaluate_model:
     parameters:
         dataset-name: {default: 'cifar10'}
-    command: 'python -c "from app.analytics import cifar_cnn; evaluate_model('cifar_cnn', 'tensorflow')"'
+        model-name: {default: 'cifar_cnn'}
+        model-flavor: {default: 'tensorflow'}
+    command: 'python -c "from app.analytics import cifar_cnn; evaluate_model({model-name}, {model-flavor})"'
