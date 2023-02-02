@@ -217,6 +217,7 @@ def promote_model_to_staging(base_model_name, model_flavor):
         best_runs = mlflow.search_runs(filter_string="attributes.run_name='train_model'",
                                        order_by=['metrics.testing_accuracy DESC'],
                                        max_results=1,
+                                       search_all_experiments=True,
                                        output_format='list')
 
         logging.info(f"Best run found for promotion to staging is...{best_runs}")
