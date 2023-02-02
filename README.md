@@ -60,14 +60,17 @@ tanzu apps workload delete image-processor --yes
 ```
 
 ### Deploy the Training Pipeline
+* cd to </root/of/branch/directory/with/appropriate/model/stage> 
+(Example: the **main** github branch represents the "None" stage, the **staging** github branch represents the "Staging" stage, etc)
+
 * Deploy the pipeline:
 ```
-kapp deploy -a image-procesor-pipeline -f config/cifar/pipeline_app.yaml --logs -y  -nargo
+kapp deploy -a image-procesor-pipeline-<THE MODEL STAGE> -f config/cifar/pipeline_app.yaml --logs -y  -nargo
 ```
 
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
 
 * To delete the pipeline:
 ```
-kapp delete -a image-procesor-pipeline -y -nargo
+kapp delete -a image-procesor-pipeline-<THE MODEL STAGE> -y -nargo
 ```
