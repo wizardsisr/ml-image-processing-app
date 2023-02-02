@@ -3,19 +3,19 @@ name: cifar_img_processing_pipeline
 entry_points:
   upload_dataset:
     parameters:
-        dataset-name: {default: ''cifar10''}
+        dataset-name: {default: "cifar10"}
     command: 'python -c "from app.analytics import cifar_cnn; import mlflow; mlflow.end_run(); cifar_cnn.upload_dataset({dataset-name})"'
   train_model:
     parameters:
-        dataset-name: {default: 'cifar10'}
-        model-name: {default: 'cifar_cnn'}
-        model-flavor: {default: 'tensorflow'}
-        model-stage: {default: 'None'}
+        dataset-name: {default: "cifar10"}
+        model-name: {default: "cifar_cnn"}
+        model-flavor: {default: "tensorflow"}
+        model-stage: {default: "None"}
         epochs: {type: float, default: 10}
     command: 'python -c "from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset({dataset-name}); data=hkl.load(dataset_path); cifar_cnn.train_model({model-name}, {model-flavor}, {model-stage}, data, epochs={epochs})"'
   evaluate_model:
     parameters:
-        dataset-name: {default: 'cifar10'}
-        model-name: {default: 'cifar_cnn'}
-        model-flavor: {default: 'tensorflow'}
+        dataset-name: {default: "cifar10"}
+        model-name: {default: "cifar_cnn"}
+        model-flavor: {default: "tensorflow"}
     command: 'python -c "from app.analytics import cifar_cnn; evaluate_model({model-name}, {model-flavor})"'
