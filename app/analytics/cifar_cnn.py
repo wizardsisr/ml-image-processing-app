@@ -183,8 +183,7 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         getattr(mlflow, model_flavor).log_model(model,
                                                 # artifact_path=f'runs:/{active_run.info.run_id}/{model_name}',
                                                 artifact_path=model_name,
-                                                registered_model_name=model_name,
-                                                await_registration_for=None)
+                                                registered_model_name=model_name)
 
         return model
 
@@ -209,6 +208,40 @@ def evaluate_model(model_name, model_flavor):
                 version=version,
                 stage="Staging"
             )
+
+
+def promote_model_to_staging(base_model_name, model_flavor):
+    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
+
+    with mlflow.start_run(run_name='promote_model_to_staging', nested=True) as active_run:
+        best_runs = mlflow.search_runs(filter_string="attributes.run_name='train_model'",
+                                       order_by=['metrics.testing_accuracy DESC'],
+                                       max_results=1,
+                                       output_format='list')
+
+        logging.info(f"Best run found for promotion to staging is...{best_runs}")
+
+        best_run_id = best_runs[0].info.run_id if len(best_runs) else None
+
+        if best_run_id is not None:
+            mv = MlflowClient().search_model_versions(f'name like {base_model_name} and run_id={best_run_id}')
+            if len(mv):
+                registered_model_name = mv[0].name
+                logging.info(f"Registered model name = {registered_model_name}, model being promoted = {base_model_name}")
+                (model, version) = download_model(registered_model_name, model_flavor, best_run_id)
+                getattr(mlflow, model_flavor).log_model(model,
+                                                        artifact_path=base_model_name,
+                                                        registered_model_name=base_model_name)
+
+                logging.info(f"Found best model for model name {base_model_name}")
+
+                MlflowClient().transition_model_version_stage(
+                    name=base_model_name,
+                    version=version,
+                    stage="Staging"
+                )
+            else:
+                logging.error("Could not promote a model to Staging (no models found to promote).")
 
 
 # ## Make Prediction

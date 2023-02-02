@@ -33,6 +33,14 @@ spec:
                   value: "evaluate_model"
                 - name: mlflow_stage
                   value: #@ data.values.model_stage
+        - - name: promote-model-to-staging
+              template: main
+              arguments:
+                parameters:
+                  - name: mlflow_entry
+                    value: "promote_model_to_staging"
+                  - name: mlflow_stage
+                    value: #@ data.values.model_stage
     - name: main
       inputs:
         parameters:
