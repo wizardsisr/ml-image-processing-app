@@ -250,7 +250,8 @@ def predict(img, model_name, model_stage):
     try:
         model = getattr(mlflow, 'tensorflow').load_model(f'models:/{model_name}/{model_stage}')
     except Exception as e:
-        logging.info('Could not load model at this time.')
+        logging.info(f'Could not load model at this time: for model name={model_name}, model stage={model_stage}')
+        traceback.print_exc()
         return None
 
     labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
