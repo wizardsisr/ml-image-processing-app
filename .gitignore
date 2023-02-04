@@ -1,2 +1,4 @@
 .env
 Dockerfileconfig/argo-workflow-http-proxy.yaml
+config/workload-api.yaml
+config/workload.yaml
