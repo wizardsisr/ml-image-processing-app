@@ -42,7 +42,7 @@ tanzu package installed update tap --values-file ../tap/resources/tap-values-tbs
 * Deploy the app:
 ```
 tanzu apps workload create image-processor -f config/workload.yaml --yes
-tanzu apps workload create image-processor-api -f config/workload.yaml --yes
+tanzu apps workload create image-processor-api -f config/workload-api.yaml --yes
 ```
 
 * Tail the logs of the main app:
@@ -68,6 +68,7 @@ tanzu apps workload get image-processor-api #should yield image-processor.defaul
 * To delete the app:
 ```
 tanzu apps workload delete image-processor --yes
+tanzu apps workload delete image-processor-api --yes
 ```
 
 ### Deploy the Training Pipeline

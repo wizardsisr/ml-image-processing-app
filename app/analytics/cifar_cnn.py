@@ -225,7 +225,7 @@ def promote_model_to_staging(base_model_name, model_flavor):
         best_run_id = best_runs[0].info.run_id if len(best_runs) else None
 
         if best_run_id is not None:
-            mv = MlflowClient().search_model_versions(f'name like "{base_model_name}" and run_id="{best_run_id}"')
+            mv = MlflowClient().search_model_versions(f'name like "{base_model_name}%" and run_id="{best_run_id}"')
             if len(mv):
                 registered_model_name = mv[0].name
                 logging.info(f"Registered model name = {registered_model_name}, model being promoted = {base_model_name}")
