@@ -40,7 +40,7 @@ def upload_dataset(dataset, dataset_url=None):
 
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
-        artifact_run_id = mlflow_utils.get_run_for_artifacts(active_run.info.run_id)
+        artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
         mlflow.environment_variables.MLFLOW_HTTP_REQUEST_TIMEOUT = '3600'
         os.environ['MLFLOW_HTTP_REQUEST_TIMEOUT'] = '3600'
 
@@ -73,7 +73,7 @@ def download_dataset(artifact):
     try:
         with mlflow.start_run(run_name='download_dataset', nested=True) as active_run:
             mlflow_utils.prep_mlflow_run(active_run)
-            artifact_run_id = mlflow_utils.get_run_for_artifacts(active_run.info.run_id)
+            artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
             with mlflow.start_run(run_id=artifact_run_id, nested='True'):
                 uri = mlflow.get_artifact_uri(artifact_path=artifact)
                 uri = uri.replace('mlflow-artifacts:', f'{os.environ.get("MLFLOW_S3_ENDPOINT_URL")}/mlflow/artifacts')
