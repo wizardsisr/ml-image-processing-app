@@ -189,7 +189,8 @@ def evaluate_model(model_name, model_flavor):
             )
 
 
-def promote_model_to_staging(base_model_name, candidate_model_name, model_flavor, evaluation_dataset_name):
+# ## Promote Model to Staging
+def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_dataset_name, model_flavor):
     """
     Evaluates the performance of the currently trained candidate model compared to the base model.
     The model that performs better based on specific metrics is then promoted to Staging.
