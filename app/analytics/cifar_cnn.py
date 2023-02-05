@@ -26,51 +26,21 @@ import http
 import requests
 from PIL import Image
 from mlflow.models import MetricThreshold
+from app.analytics import mlflow_utils
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 warnings.filterwarnings('ignore')
 
 
-# ## Utilities
-def get_run_for_artifacts(active_run_id):
-    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
-    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.mainartifacts='y'", max_results=1,
-                              output_format='list')
-    if len(runs):
-        return runs[0].info.run_id
-    else:
-        mlflow.set_tags({'mainartifacts': 'y'})
-        return active_run_id
-
-
-def get_root_run(active_run_id=None):
-    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
-    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
-                              output_format='list')
-    if len(runs):
-        parent_run_id = runs[0].info.run_id
-        mlflow.set_tags({'mlflow.parentRunId': parent_run_id})
-        return parent_run_id
-    else:
-        mlflow.set_tags({'runlevel': 'root'})
-        return active_run_id
-
-
-def get_current_run():
-    last_active_run = mlflow.last_active_run()
-    return last_active_run.info.run_id if last_active_run else None
-
-
 # ## Upload dataset
 
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
-    experiment_id = mlflow.get_experiment_by_name(os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default')
 
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
-        mlflow.set_tags({'mlflow.parentRunId': get_root_run(active_run_id=active_run.info.run_id)})
-        artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
+        mlflow_utils.prep_mlflow_run(active_run)
+        artifact_run_id = mlflow_utils.get_run_for_artifacts(active_run.info.run_id)
         mlflow.environment_variables.MLFLOW_HTTP_REQUEST_TIMEOUT = '3600'
         os.environ['MLFLOW_HTTP_REQUEST_TIMEOUT'] = '3600'
 
@@ -102,7 +72,8 @@ def upload_dataset(dataset, dataset_url=None):
 def download_dataset(artifact):
     try:
         with mlflow.start_run(run_name='download_dataset', nested=True) as active_run:
-            artifact_run_id = get_run_for_artifacts(active_run.info.run_id)
+            mlflow_utils.prep_mlflow_run(active_run)
+            artifact_run_id = mlflow_utils.get_run_for_artifacts(active_run.info.run_id)
             with mlflow.start_run(run_id=artifact_run_id, nested='True'):
                 uri = mlflow.get_artifact_uri(artifact_path=artifact)
                 uri = uri.replace('mlflow-artifacts:', f'{os.environ.get("MLFLOW_S3_ENDPOINT_URL")}/mlflow/artifacts')
@@ -123,6 +94,7 @@ def download_dataset(artifact):
 
 def download_model(model_name, model_flavor, best_run_id=None, retries=2):
     with mlflow.start_run(run_name='download_model', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         try:
             client = MlflowClient()
             if best_run_id:
@@ -150,7 +122,7 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
 # ## Train Model
 def train_model(model_name, model_flavor, model_stage, data, epochs=10):
     with mlflow.start_run(run_name='train_model', nested=True) as active_run:
-        mlflow.set_tags({'mlflow.parentRunId': get_root_run(active_run_id=active_run.info.run_id)})
+        mlflow_utils.prep_mlflow_run(active_run)
         # Build and Compile Model
         with tensorflow.device('/CPU:0'):  # Place tensors on the CPU
             model = models.Sequential()
@@ -199,7 +171,7 @@ def evaluate_model(model_name, model_flavor):
     experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
 
     with mlflow.start_run(run_name='evaluate_model', nested=True) as active_run:
-        mlflow.set_tags({'mlflow.parentRunId': get_root_run(active_run_id=active_run.info.run_id)})
+        mlflow_utils.prep_mlflow_run(active_run)
         best_runs = mlflow.search_runs(experiment_names=[experiment_name],
                                        filter_string="attributes.run_name='train_model'",
                                        order_by=['metrics.testing_accuracy DESC'],
@@ -224,11 +196,15 @@ def promote_model_to_staging(base_model_name, candidate_model_name, model_flavor
     """
 
     with mlflow.start_run(run_name='promote_model_to_staging', nested=True) as active_run:
-        mlflow.set_tags({'mlflow.parentRunId': get_root_run(active_run_id=active_run.info.run_id)})
+        mlflow_utils.prep_mlflow_run(active_run)
 
         _data = download_dataset(evaluation_dataset_name)
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor)
+
+        if candidate_model is None:
+            logging.error("ERROR: Could not proceed: candidate model not found")
+            return False
 
         if base_model is None:
             logging.info(
@@ -247,14 +223,18 @@ def promote_model_to_staging(base_model_name, candidate_model_name, model_flavor
         }
 
         try:
+            candidate_model_info = mlflow.models.get_model_info(
+                f"models:/{candidate_model_name}/{candidate_model_version}")
+            base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
             mlflow.evaluate(
-                mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}"),
+                candidate_model_info.model_uri,
                 _data.get('test_data'),
                 targets=_data.get('test_labels'),
                 model_type="classifier",
                 validation_thresholds=thresholds,
-                baseline_model=mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}"),
+                baseline_model=base_model_info.model_uri,
             )
+            logging.info("Model evaluation generated successfully.")
         except Exception as e:
             logging.error(f'Candidate model will not be promoted (will retain base model); failed threshold criteria')
             traceback.print_exc()
