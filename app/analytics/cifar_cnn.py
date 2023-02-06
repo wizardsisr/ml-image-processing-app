@@ -109,11 +109,11 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
                 return model, version
             else:
                 logging.info(f"No suitable candidate model found for {model_name}...")
-                return None
+                return None, None
         except MlflowException as me:
             if me.get_http_status_code() == 404:
                 logging.error(f"Could not download {model_name} - model not found")
-                return None
+                return None, None
         except Exception as e:
             if retries > 0:
                 logging.error(f"Could not download {model_name} - retrying...")
@@ -122,6 +122,7 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
             else:
                 logging.error(f'Could not complete download for model {model_name} - error occurred: ', exc_info=True)
                 traceback.print_exc()
+                return None, None
 
 
 # ## Train Model
