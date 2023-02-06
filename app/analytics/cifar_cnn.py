@@ -245,7 +245,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
             mlflow.evaluate(
                 candidate_model_info.model_uri,
-                pd.DataFrame({'data': _data.get('test_data'), 'labels': _data.get('test_labels')}),
+                pd.DataFrame({'data': _data.get('test_data').tolist(), 'labels': _data.get('test_labels').tolist()}),
                 targets="labels",
                 model_type="classifier",
                 validation_thresholds=thresholds,
