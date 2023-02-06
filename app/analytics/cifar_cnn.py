@@ -94,6 +94,7 @@ def download_dataset(artifact):
 
 
 def download_model(model_name, model_flavor, best_run_id=None, retries=2):
+    model, version = None, None
     with mlflow.start_run(run_name='download_model', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
         try:
@@ -106,10 +107,8 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
             if len(versions) and versions[0].current_stage.lower() != 'production':
                 version = versions[0].version
                 model = getattr(mlflow, model_flavor).load_model(f'models:/{model_name}/{version}')
-                return model, version
             else:
                 logging.info(f"No suitable candidate model found for {model_name}...")
-                return (None, None)
         except Exception as e:
             if retries > 0:
                 logging.error(f"Could not download {model_name} - retrying...")
@@ -118,7 +117,7 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
             else:
                 logging.error(f'Could not complete download for model {model_name} - error occurred: ', exc_info=True)
                 traceback.print_exc()
-                return (None, None)
+        return model, version
 
 
 # ## Train Model
