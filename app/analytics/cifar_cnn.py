@@ -110,10 +110,6 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
             else:
                 logging.info(f"No suitable candidate model found for {model_name}...")
                 return None, None
-        except MlflowException as me:
-            if me.get_http_status_code() == 404:
-                logging.error(f"Could not download {model_name} - model not found")
-                return None, None
         except Exception as e:
             if retries > 0:
                 logging.error(f"Could not download {model_name} - retrying...")

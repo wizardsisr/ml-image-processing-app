@@ -27,6 +27,12 @@ def get_root_run(active_run_id=None):
         return active_run_id
 
 
+def start_new_root_run():
+    root_run_id = get_root_run()
+    mlflow.set_terminated(get_root_run()) if root_run_id else True
+    mlflow.set_tags({'runlevel': 'root'})
+
+
 def get_current_run():
     last_active_run = mlflow.last_active_run()
     return last_active_run.info.run_id if last_active_run else None
