@@ -86,7 +86,7 @@ def download_dataset(artifact):
                 os.makedirs(os.path.dirname(f'downloads/{artifact}'), exist_ok=True)
                 with open(download_path, 'wb') as f:
                     f.write(req.content)
-                    logging.info(f'{artifact} download complete.')
+                    logging.info(f'{artifact} download complete: {download_path}')
                 return download_path
     except http.client.IncompleteRead as icread:
         logging.info(f'Incomplete read...{icread}')
