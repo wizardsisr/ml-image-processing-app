@@ -4,7 +4,7 @@ entry_points:
   upload_dataset:
     parameters:
         dataset-name: {default: "cifar10"}
-    command: 'python -c "from app.analytics import cifar_cnn, mlflow_utils; import mlflow; mlflow.end_run(); cifar_cnn.upload_dataset(\"{dataset-name}\")"'
+    command: 'python -c "from app.analytics import cifar_cnn; import mlflow; mlflow.end_run(); cifar_cnn.upload_dataset(\"{dataset-name}\")"'
   train_model:
     parameters:
         dataset-name: {default: "cifar10"}

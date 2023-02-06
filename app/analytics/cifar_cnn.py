@@ -211,9 +211,18 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         if base_model is None:
             logging.info(
                 f"No prior base model found...setting up base model: name {base_model_name}, version {base_model_version}")
+
+            base_model, base_model_version = candidate_model, 1
+
             getattr(mlflow, model_flavor).log_model(base_model,
                                                     artifact_path=base_model_name,
                                                     registered_model_name=base_model_name)
+
+            MlflowClient().transition_model_version_stage(
+                name=base_model_name,
+                version=base_model_version,
+                stage="Staging"
+            )
 
         thresholds = {
             "accuracy_score": MetricThreshold(
@@ -228,6 +237,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             candidate_model_info = mlflow.models.get_model_info(
                 f"models:/{candidate_model_name}/{candidate_model_version}")
             base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
+
             mlflow.evaluate(
                 candidate_model_info.model_uri,
                 _data.get('test_data'),
@@ -236,6 +246,13 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
                 validation_thresholds=thresholds,
                 baseline_model=base_model_info.model_uri,
             )
+
+            MlflowClient().transition_model_version_stage(
+                name=candidate_model_name,
+                version=candidate_model_version,
+                stage="Staging"
+            )
+
             logging.info("Model evaluation generated successfully.")
         except Exception as e:
             logging.error(f'Candidate model will not be promoted (will retain base model); failed threshold criteria')
