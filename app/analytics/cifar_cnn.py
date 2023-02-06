@@ -8,6 +8,9 @@ import tensorflow
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
+import keras.backend as K
+from keras.layers import Input, Lambda
+from keras.models import Model
 import logging
 import pathlib
 import mlflow
@@ -38,7 +41,6 @@ warnings.filterwarnings('ignore')
 
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
-
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
@@ -212,7 +214,9 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             logging.info(
                 f"No prior base model found...setting up base model: name {base_model_name}, version {base_model_version}")
 
-            base_model, base_model_version = candidate_model, 1
+            inp = Input((32, 32, 3))
+            out = Lambda(lambda x: x[:, 0, 0, 0, 0, 0, 0, 0, 0, 0])(inp)
+            base_model, base_model_version = Model(inp, out), 1
 
             getattr(mlflow, model_flavor).log_model(base_model,
                                                     artifact_path=base_model_name,
@@ -247,9 +251,13 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
                 baseline_model=base_model_info.model_uri,
             )
 
+            getattr(mlflow, model_flavor).log_model(candidate_model,
+                                                    artifact_path=base_model_name,
+                                                    registered_model_name=base_model_name)
+
             MlflowClient().transition_model_version_stage(
-                name=candidate_model_name,
-                version=candidate_model_version,
+                name=base_model_name,
+                version=base_model_version + 1,
                 stage="Staging"
             )
 
