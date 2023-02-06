@@ -27,6 +27,7 @@ import requests
 from PIL import Image
 from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
+from mlflow.exceptions import MlflowException
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
@@ -108,6 +109,10 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
                 return model, version
             else:
                 logging.info(f"No suitable candidate model found for {model_name}...")
+                return None
+        except MlflowException as me:
+            if me.get_http_status_code() == 404:
+                logging.error(f"Could not download {model_name} - model not found")
                 return None
         except Exception as e:
             if retries > 0:
