@@ -216,7 +216,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
                 f"No prior base model found...setting up base model: name {base_model_name}, version {base_model_version}")
 
             inp = Input((32, 32, 3))
-            out = Lambda(lambda x: x[:, 0, 0, 0, 0, 0, 0, 0, 0, 0])(inp)
+            out = Lambda(lambda x: x[:, 0, 0])(inp)
             base_model, base_model_version = Model(inp, out), 1
 
             getattr(mlflow, model_flavor).log_model(base_model,
