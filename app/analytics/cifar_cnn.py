@@ -201,8 +201,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         mlflow_utils.prep_mlflow_run(active_run)
 
         _data = download_dataset(evaluation_dataset_name)
-        (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor)
-        (base_model, base_model_version) = download_model(base_model_name, model_flavor)
+        (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=60)
+        (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=60)
 
         if candidate_model is None:
             logging.error("ERROR: Could not proceed: candidate model not found")
