@@ -227,7 +227,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             mlflow.evaluate(
                 candidate_model_info.model_uri,
                 eval_data.reshape(eval_data.shape[0], -1),
-                targets=eval_target.reshape(1),
+                targets=eval_target.reshape(eval_data.shape[0]),
                 model_type="classifier",
                 validation_thresholds=thresholds if base_model_info else None,
                 baseline_model=base_model_info.model_uri if base_model_info else None,
