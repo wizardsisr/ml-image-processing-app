@@ -209,6 +209,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
         candidate_model_info = mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}")
+        base_model_info, thresholds = None, None
 
         if base_model is None:
             logging.info(f"No prior base model found with name {base_model_name}")
