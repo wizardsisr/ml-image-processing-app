@@ -206,6 +206,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         _data = hkl.load(_data_path)
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
+        test_data = _data.get('test_data')
+        test_labels = _data.get('test_labels')
         # candidate_model_info = mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}")
         # base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}") if base_model else None
 
@@ -213,15 +215,9 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             logging.info(f"No prior base model found with name {base_model_name}")
 
         try:
-            test_data = _data.get('test_data')
-            test_labels = _data.get('test_labels')
-
             # Generate and Save Evaluation Metrics
-            candidate_predictions = candidate_model.predict(test_data)
-            logging.info(f"Predictions: {candidate_predictions.shape}")
-            curr_data = pd.DataFrame(candidate_predictions.reshape(candidate_predictions.shape[0], -1))
-            curr_data['target'] = test_labels.reshape(test_labels.shape[0],)
-            ref_data = None  # pd.DataFrame({'prediction': base_model.predict(test_data), 'target': test_labels.reshape(test_labels.shape[0],)}) if base_model else None
+            curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+            ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model) if base_model else None
 
             tests = TestSuite(tests=[
                 MulticlassClassificationTestPreset()
@@ -305,3 +301,11 @@ def predict(img, model_name, model_stage):
     logging.info(
         f'Predictions in order...list={prediction_results}, index={np.argmax(prediction_results)}, prediction={prediction}')
     return prediction
+
+
+def _tensors_to_1d_prediction_and_target(tensor_data, tensor_labels, tensor_model):
+    predictions = tensor_model.predict(tensor_data)
+    predictions = predictions.reshape(predictions.shape[0], -1)
+    data = pd.DataFrame({'prediction': np.fromiter((np.argmax(x) for x in predictions), dtype='int'),
+                         'target': tensor_labels.reshape(tensor_labels.shape[0],)})
+    return data
