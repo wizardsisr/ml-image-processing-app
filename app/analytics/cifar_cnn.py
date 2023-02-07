@@ -213,7 +213,6 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         if base_model is None:
             logging.info(f"No prior base model found with name {base_model_name}")
         else:
-            base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
             thresholds = {
                 "accuracy_score": MetricThreshold(
                     threshold=0.5,
@@ -224,13 +223,15 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             }
 
         try:
+            temp_candidate_model_info = mlflow.sklearn.log_model(candidate_model, "tmp_candidate_model")
+            temp_base_model_info = mlflow.sklearn.log_model(base_model, "tmp_base_model") if base_model else None
             mlflow.evaluate(
-                candidate_model_info.model_uri,
-                eval_data,  # .reshape(eval_data.shape[0], -1),
+                temp_candidate_model_info.model_uri,
+                eval_data.reshape(eval_data.shape[0], -1),
                 targets=eval_target.reshape(eval_data.shape[0]),
                 model_type="classifier",
-                validation_thresholds=thresholds if base_model_info else None,
-                baseline_model=base_model_info.model_uri if base_model_info else None,
+                validation_thresholds=thresholds if base_model else None,
+                baseline_model=temp_base_model_info.model_uri if base_model else None,
             )
 
             getattr(mlflow, model_flavor).log_model(candidate_model,
