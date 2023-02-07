@@ -219,7 +219,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             # Generate and Save Evaluation Metrics
             candidate_predictions = candidate_model.predict(test_data)
             logging.info(f"Predictions: {candidate_predictions.shape}")
-            curr_data = pd.DataFrame({'prediction': candidate_predictions.reshape(candidate_predictions.shape[0],), 'target': test_labels.reshape(test_labels.shape[0],)})
+            curr_data = pd.DataFrame(candidate_predictions.reshape(candidate_predictions.shape[0], -1))
+            curr_data['target'] = test_labels.reshape(test_labels.shape[0],)
             ref_data = None  # pd.DataFrame({'prediction': base_model.predict(test_data), 'target': test_labels.reshape(test_labels.shape[0],)}) if base_model else None
 
             tests = TestSuite(tests=[
