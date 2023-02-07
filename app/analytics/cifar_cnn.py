@@ -96,7 +96,7 @@ def download_dataset(artifact):
 
 
 def download_model(model_name, model_flavor, best_run_id=None, retries=2):
-    model, version = None, None
+    model, version = None, 0
     with mlflow.start_run(run_name='download_model', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
         try:
@@ -201,64 +201,36 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
     with mlflow.start_run(run_name='promote_model_to_staging', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
-
         _data_path = download_dataset(evaluation_dataset_name)
         _data = hkl.load(_data_path)
+        eval_data = _data.get('test_data')
+        eval_data = eval_data.reshape(eval_data.shape[0], -1)
+        eval_target = _data.get('test_labels')
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
-
-        if candidate_model is None:
-            logging.error("ERROR: Could not proceed: candidate model not found")
-            return False
+        candidate_model_info = mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}")
 
         if base_model is None:
-            logging.info(
-                f"No prior base model found...setting up base model: name {base_model_name}, version {base_model_version}")
-
-            inp = Input((32, 32, 3))
-            out = layers.Dense(10, activation='softmax')(inp)
-            base_model, base_model_version = Model(inp, out), 1
-            base_model.compile(optimizer='adam',
-                               loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                               metrics=['accuracy'])
-            base_model.fit(_data.get('training_data'), _data.get('training_labels'), epochs=1,
-                           validation_data=(_data.get('test_data'), _data.get('test_labels')))
-
-            getattr(mlflow, model_flavor).log_model(base_model,
-                                                    artifact_path=base_model_name,
-                                                    registered_model_name=base_model_name)
-
-            MlflowClient().transition_model_version_stage(
-                name=base_model_name,
-                version=base_model_version,
-                stage="Staging"
-            )
-
-        thresholds = {
-            "accuracy_score": MetricThreshold(
-                threshold=0.5,
-                min_absolute_change=0.01,
-                min_relative_change=0.01,
-                higher_is_better=True
-            ),
-        }
+            logging.info(f"No prior base model found with name {base_model_name}")
+        else:
+            base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
+            thresholds = {
+                "accuracy_score": MetricThreshold(
+                    threshold=0.5,
+                    min_absolute_change=0.01,
+                    min_relative_change=0.01,
+                    higher_is_better=True
+                ),
+            }
 
         try:
-            candidate_model_info = mlflow.models.get_model_info(
-                f"models:/{candidate_model_name}/{candidate_model_version}")
-            base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
-
-            eval_data = _data.get('test_data')
-            eval_data = eval_data.reshape(eval_data.shape[0], -1)
-            eval_target = _data.get('test_labels')
-
             mlflow.evaluate(
                 candidate_model_info.model_uri,
                 eval_data,
                 targets=eval_target,
                 model_type="classifier",
-                validation_thresholds=thresholds,
-                baseline_model=base_model_info.model_uri,
+                validation_thresholds=thresholds if base_model_info else None,
+                baseline_model=base_model_info.model_uri if base_model_info else None,
             )
 
             getattr(mlflow, model_flavor).log_model(candidate_model,
@@ -267,7 +239,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
             MlflowClient().transition_model_version_stage(
                 name=base_model_name,
-                version=base_model_version + 1,
+                version=base_model_version+1,
                 stage="Staging"
             )
 
