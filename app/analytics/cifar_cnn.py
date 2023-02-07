@@ -204,7 +204,6 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         _data_path = download_dataset(evaluation_dataset_name)
         _data = hkl.load(_data_path)
         eval_data = _data.get('test_data')
-        eval_data = eval_data.reshape(eval_data.shape[0], -1)
         eval_target = _data.get('test_labels')
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
@@ -227,8 +226,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         try:
             mlflow.evaluate(
                 candidate_model_info.model_uri,
-                eval_data,
-                targets=eval_target,
+                eval_data.reshape(eval_data.shape[0], -1),
+                targets=eval_target.reshape(1),
                 model_type="classifier",
                 validation_thresholds=thresholds if base_model_info else None,
                 baseline_model=base_model_info.model_uri if base_model_info else None,
