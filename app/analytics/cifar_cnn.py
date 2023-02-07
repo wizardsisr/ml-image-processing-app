@@ -218,6 +218,11 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             inp = Input((32, 32, 3))
             out = layers.Dense(10, activation='softmax')(inp)
             base_model, base_model_version = Model(inp, out), 1
+            base_model.compile(optimizer='adam',
+                               loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                               metrics=['accuracy'])
+            base_model.fit(_data.get('training_data'), _data.get('training_labels'), epochs=1,
+                           validation_data=(_data.get('test_data'), _data.get('test_labels')))
 
             getattr(mlflow, model_flavor).log_model(base_model,
                                                     artifact_path=base_model_name,
@@ -243,10 +248,14 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
                 f"models:/{candidate_model_name}/{candidate_model_version}")
             base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}")
 
+            eval_data = _data.get('test_data')
+            eval_data = eval_data.reshape(eval_data.shape[0], -1)
+            eval_target = _data.get('test_labels')
+
             mlflow.evaluate(
                 candidate_model_info.model_uri,
-                _data.get('test_data').reshape(-1, 1),
-                targets=_data.get('test_labels'),
+                eval_data,
+                targets=eval_target,
                 model_type="classifier",
                 validation_thresholds=thresholds,
                 baseline_model=base_model_info.model_uri,
