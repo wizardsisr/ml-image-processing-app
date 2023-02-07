@@ -140,7 +140,7 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
             model.summary()
             model.compile(optimizer='adam',
                           loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                          metrics=['accuracy'])
+                          metrics=['accuracy', 'function'])
 
             # Fit model
             history = model.fit(data.get('training_data'), data.get('training_labels'), epochs=epochs,
