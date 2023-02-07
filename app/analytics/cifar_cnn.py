@@ -30,7 +30,8 @@ import requests
 from PIL import Image
 from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
-from mlflow.exceptions import MlflowException
+from evidently.test_suite import TestSuite
+from evidently.test_preset import MulticlassClassificationTestPreset
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
@@ -203,37 +204,34 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         mlflow_utils.prep_mlflow_run(active_run)
         _data_path = download_dataset(evaluation_dataset_name)
         _data = hkl.load(_data_path)
-        eval_data = _data.get('test_data')
-        eval_target = _data.get('test_labels')
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
-        candidate_model_info = mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}")
-        base_model_info, thresholds = None, None
+        # candidate_model_info = mlflow.models.get_model_info(f"models:/{candidate_model_name}/{candidate_model_version}")
+        # base_model_info = mlflow.models.get_model_info(f"models:/{base_model_name}/{base_model_version}") if base_model else None
 
         if base_model is None:
             logging.info(f"No prior base model found with name {base_model_name}")
-        else:
-            thresholds = {
-                "accuracy_score": MetricThreshold(
-                    threshold=0.5,
-                    min_absolute_change=0.01,
-                    min_relative_change=0.01,
-                    higher_is_better=True
-                ),
-            }
 
         try:
-            temp_candidate_model_info = mlflow.pyfunc.log_model(candidate_model, "tmp_candidate_model")
-            temp_base_model_info = mlflow.pyfunc.log_model(base_model, "tmp_base_model") if base_model else None
-            mlflow.evaluate(
-                temp_candidate_model_info.model_uri,
-                eval_data.reshape(eval_data.shape[0], -1),
-                targets=eval_target.reshape(eval_data.shape[0]),
-                model_type="classifier",
-                validation_thresholds=thresholds if base_model else None,
-                baseline_model=temp_base_model_info.model_uri if base_model else None,
-            )
+            test_data = _data.get('test_data')
+            test_labels = _data.get('test_labels')
 
+            # Generate and Save Evaluation Metrics
+            curr_data = pd.DataFrame({'prediction': candidate_model.predict(test_data), 'target': test_labels.reshape(test_labels.shape[0],)})
+            ref_data = pd.DataFrame({'prediction': base_model.predict(test_data), 'target': test_labels.reshape(test_labels.shape[0],)}) if base_model else None
+
+            tests = TestSuite(tests=[
+                MulticlassClassificationTestPreset()
+            ])
+            tests.run(reference_data=ref_data, current_data=curr_data)
+            tests_results_json = tests.json()
+            logging.info(f"Evidently generated results...{tests_results_json}")
+            tests.save_html('/tmp/test_results.html')
+            mlflow.log_artifact("/tmp/test_results.html")
+
+            # TODO: Determine the best model
+
+            # Promote the best model
             getattr(mlflow, model_flavor).log_model(candidate_model,
                                                     artifact_path=base_model_name,
                                                     registered_model_name=base_model_name)
