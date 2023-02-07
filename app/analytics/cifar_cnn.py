@@ -140,7 +140,7 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
             model.summary()
             model.compile(optimizer='adam',
                           loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                          metrics=['accuracy', 'function'])
+                          metrics=['accuracy'])
 
             # Fit model
             history = model.fit(data.get('training_data'), data.get('training_labels'), epochs=epochs,
@@ -223,8 +223,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             }
 
         try:
-            temp_candidate_model_info = mlflow.sklearn.log_model(candidate_model, "tmp_candidate_model")
-            temp_base_model_info = mlflow.sklearn.log_model(base_model, "tmp_base_model") if base_model else None
+            temp_candidate_model_info = mlflow.pyfunc.log_model(candidate_model, "tmp_candidate_model")
+            temp_base_model_info = mlflow.pyfunc.log_model(base_model, "tmp_base_model") if base_model else None
             mlflow.evaluate(
                 temp_candidate_model_info.model_uri,
                 eval_data.reshape(eval_data.shape[0], -1),
