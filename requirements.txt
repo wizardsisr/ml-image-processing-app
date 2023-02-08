@@ -38,5 +38,5 @@ filelock==3.9.0
 pyarrow<7.0.0
 hickle
 python-multipart
-evidently
+evidently==0.1.59.dev3
 .

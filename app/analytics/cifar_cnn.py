@@ -28,6 +28,7 @@ import traceback
 from io import StringIO
 import http
 import requests
+import json
 from PIL import Image
 from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
@@ -120,7 +121,6 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
                 download_model(model_name, model_flavor, best_run_id=best_run_id, retries=retries - 1)
             else:
                 logging.error(f'Could not complete download for model {model_name} - error occurred: ', exc_info=True)
-                traceback.print_exc()
         return model, version
 
 
@@ -128,6 +128,8 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
 def train_model(model_name, model_flavor, model_stage, data, epochs=10):
     with mlflow.start_run(run_name='train_model', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
+        artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
+        client = MlflowClient()
         # Build and Compile Model
         with tensorflow.device('/CPU:0'):  # Place tensors on the CPU
             model = models.Sequential()
@@ -155,12 +157,12 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         plt.ylabel('Accuracy')
         plt.ylim([0.5, 1])
         plt.savefig("cifar_cnn_accuracy.png", bbox_inches='tight')
-        mlflow.log_artifact("cifar_cnn_accuracy.png")
+        client.log_artifact(artifact_run_id, "cifar_cnn_accuracy.png")
 
         # Log Metrics
         test_loss, test_acc = model.evaluate(data.get('test_data'), data.get('test_labels'), verbose=2)
-        mlflow.log_metric('testing_loss', test_loss)
-        mlflow.log_metric('testing_accuracy', test_acc)
+        client.log_metric(artifact_run_id, 'testing_loss', test_loss)
+        client.log_metric(artifact_run_id, 'testing_accuracy', test_acc)
         getattr(mlflow, model_flavor).autolog(log_models=False)
 
         # Register model
@@ -203,6 +205,9 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
     with mlflow.start_run(run_name='promote_model_to_staging', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
+        artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
+        client = MlflowClient()
+
         _data_path = download_dataset(evaluation_dataset_name)
         _data = hkl.load(_data_path)
         (candidate_model, candidate_model_version) = download_model(candidate_model_name, model_flavor, retries=6)
@@ -214,82 +219,45 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             logging.info(f"No prior base model found with name {base_model_name}; preparing dummy model...")
             size, num_classes = test_labels.shape[0], 10
             dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, int(size / num_classes)),
-                                       'y': np.random.randint(0, num_classes, int(size / num_classes))})
+                                       'y': np.zeros(size)})
             base_model = DummyClassifier(strategy="uniform").fit(dummy_data['x'], dummy_data['y'])
 
-        try:
-            # Generate and Save Evaluation Metrics
-            curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
-            ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model) if base_model else None
-            tests = TestSuite(tests=[
-                MulticlassClassificationTestPreset()
-            ])
-            tests.run(current_data=curr_data, reference_data=ref_data)
+        # Generate and Save Evaluation Metrics
+        curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+        ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model)
+        tests = TestSuite(tests=[
+            MulticlassClassificationTestPreset()
+        ])
+        tests.run(current_data=curr_data, reference_data=ref_data)
 
-            # Log Evaluation Metrics
-            tests_results_json = tests.json()
-            logging.info(f"Evidently generated results...{tests_results_json}")
+        # Log Evaluation Metrics
+        tests_results_json = tests.json()
+        logging.info(f"Evidently generated results...{tests_results_json}")
 
-            # Save Evaluation Metrics Report
-            tests.save_html('/tmp/test_results.html')
-            mlflow.log_artifact("/tmp/test_results.html")
-            logging.info("Model evaluation report generated successfully.")
+        # Save Evaluation Metrics Report
+        tests.save_html('/tmp/test_results.html')
+        client.log_artifact(artifact_run_id, "/tmp/test_results.html")
+        logging.info("Model evaluation report generated successfully.")
 
-            # TODO: Determine the best model
-            tests_results_json_tests = tests_results_json['tests']
-            accuracy_results = np.array([test for test in tests_results_json_tests if test['name'] == 'Accuracy Score'])
-            if len(accuracy_results):
-                mlflow.log_metric('accuracy_score', accuracy_results[0]['parameters']['accuracy'])
+        # Determine the best model
+        tests_results_json_tests = json.loads(tests_results_json)['tests']
+        accuracy_results = np.array([test for test in tests_results_json_tests if test['name'] == 'Accuracy Score'])
+        if len(accuracy_results):
+            client.log_metric(artifact_run_id, 'accuracy_score', accuracy_results[0]['parameters']['accuracy'])
+            promote_candidate_model = accuracy_results[0]['status'] == 'SUCCESS'
 
-                # Promote the best model
-                if accuracy_results[0]['status'] == 'SUCCESS':
-                    getattr(mlflow, model_flavor).log_model(candidate_model,
-                                                            artifact_path=base_model_name,
-                                                            registered_model_name=base_model_name)
+            # Promote the best model
+            getattr(mlflow, model_flavor).log_model(candidate_model if promote_candidate_model else base_model,
+                                                    artifact_path=base_model_name,
+                                                    registered_model_name=base_model_name)
 
-                    MlflowClient().transition_model_version_stage(
-                        name=base_model_name,
-                        version=base_model_version + 1,
-                        stage="Staging"
-                    )
-                else:
-                    logging.info("Candidate model failed criteria for promotion")
-                    if base_model is None:
-                        raise Exception("ERROR: Could not promote any model to Staging")
-        finally:
-            pass
-
-        """if candidate_model is None:
-            best_runs = mlflow.search_runs(filter_string="attributes.run_name='train_model'",
-                                           order_by=['metrics.testing_accuracy DESC'],
-                                           max_results=1,
-                                           search_all_experiments=True,
-                                           output_format='list')
-
-            logging.info(f"Best run found for promotion to staging is...{best_runs}")
-
-            best_run_id = best_runs[0].info.run_id if len(best_runs) else None
-
-            if best_run_id is not None:
-                mv = MlflowClient().search_model_versions(f'name like "{base_model_name}%" and run_id="{best_run_id}"')
-                if len(mv):
-                    registered_model_name = mv[0].name
-                    logging.info(
-                        f"Registered model name = {registered_model_name}, model being promoted = {base_model_name}")
-                    (model, version) = download_model(registered_model_name, model_flavor, best_run_id=best_run_id)
-                    getattr(mlflow, model_flavor).log_model(model,
-                                                            artifact_path=base_model_name,
-                                                            registered_model_name=base_model_name)
-
-                    logging.info(f"Found best model for model name {base_model_name}")
-
-                    MlflowClient().transition_model_version_stage(
-                        name=base_model_name,
-                        version=version,
-                        stage="Staging"
-                    )
-                else:
-                    logging.error("Could not promote a model to Staging (no models found to promote).")"""
+            client.transition_model_version_stage(
+                name=base_model_name,
+                version=base_model_version + 1,
+                stage="Staging"
+            )
+        else:
+            raise Exception("ERROR: Failed to identify model for promotion.")
 
 
 # ## Make Prediction
