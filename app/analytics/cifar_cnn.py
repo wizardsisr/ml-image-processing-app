@@ -219,10 +219,10 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             tests = TestSuite(tests=[
                 MulticlassClassificationTestPreset()
             ])
-            if curr_data:
-                tests.run(reference_data=ref_data, current_data=curr_data)
+            if base_model:
+                tests.run(current_data=curr_data, reference_data=ref_data)
             else:
-                tests.run(reference_data=ref_data)
+                tests.run(current_data=curr_data)
 
             # Log Evaluation Metrics
             tests_results_json = tests.json()
