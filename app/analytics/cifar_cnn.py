@@ -214,8 +214,9 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         (base_model, base_model_version) = download_model(base_model_name, model_flavor, retries=6)
         test_data = _data.get('test_data')
         test_labels = _data.get('test_labels')
+        preexisting_base_model_found = base_model is not None
 
-        if base_model is None:
+        if not preexisting_base_model_found:
             logging.info(f"No prior base model found with name {base_model_name}; preparing dummy model...")
             size, num_classes = test_labels.shape[0], 10
             dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, size),
@@ -244,7 +245,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         accuracy_results = np.array([test for test in tests_results_json_tests if test['name'] == 'Accuracy Score'])
         if len(accuracy_results):
             client.log_metric(artifact_run_id, 'accuracy_score', accuracy_results[0]['parameters']['accuracy'])
-            promote_candidate_model = accuracy_results[0]['status'] == 'SUCCESS'
+            promote_candidate_model = accuracy_results[0]['status'] == 'SUCCESS' or not preexisting_base_model_found
 
             # Promote the best model
             getattr(mlflow, model_flavor).log_model(candidate_model if promote_candidate_model else base_model,
