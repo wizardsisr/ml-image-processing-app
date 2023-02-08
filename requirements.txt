@@ -39,5 +39,5 @@ pyarrow<7.0.0
 hickle
 python-multipart
 evidently
-sqlite3
+pysqlite3-binary
 .
