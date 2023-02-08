@@ -1,1 +1,1 @@
-web: streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8080
+web: apt-get install libsqlite3-dev && streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8080
