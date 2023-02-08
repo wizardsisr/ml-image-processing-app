@@ -8,6 +8,7 @@ import tensorflow
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
+from sklearn.dummy import DummyClassifier
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
@@ -210,7 +211,11 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         test_labels = _data.get('test_labels')
 
         if base_model is None:
-            logging.info(f"No prior base model found with name {base_model_name}")
+            logging.info(f"No prior base model found with name {base_model_name}; preparing dummy model...")
+            size, num_classes = test_labels.shape[0], 10
+            dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, int(size / num_classes)),
+                                       'y': np.random.randint(0, num_classes, int(size / num_classes))})
+            base_model = DummyClassifier(strategy="uniform").fit(dummy_data['x'], dummy_data['target'])
 
         try:
             # Generate and Save Evaluation Metrics
@@ -219,10 +224,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             tests = TestSuite(tests=[
                 MulticlassClassificationTestPreset()
             ])
-            if base_model:
-                tests.run(current_data=curr_data, reference_data=ref_data)
-            else:
-                tests.run(current_data=curr_data)
+            tests.run(current_data=curr_data, reference_data=ref_data)
 
             # Log Evaluation Metrics
             tests_results_json = tests.json()
@@ -247,7 +249,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
                     MlflowClient().transition_model_version_stage(
                         name=base_model_name,
-                        version=base_model_version+1,
+                        version=base_model_version + 1,
                         stage="Staging"
                     )
                 else:
@@ -256,7 +258,6 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
                         raise Exception("ERROR: Could not promote any model to Staging")
         finally:
             pass
-
 
         """if candidate_model is None:
             best_runs = mlflow.search_runs(filter_string="attributes.run_name='train_model'",
@@ -319,5 +320,5 @@ def _tensors_to_1d_prediction_and_target(tensor_data, tensor_labels, tensor_mode
     predictions = tensor_model.predict(tensor_data)
     predictions = predictions.reshape(predictions.shape[0], -1)
     data = pd.DataFrame({'prediction': np.fromiter((np.argmax(x) for x in predictions), dtype='int'),
-                         'target': tensor_labels.reshape(tensor_labels.shape[0],)})
+                         'target': tensor_labels.reshape(tensor_labels.shape[0], )})
     return data
