@@ -220,7 +220,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             logging.info(f"No prior base model found with name {base_model_name}; preparing dummy model...")
             size, num_classes = test_labels.shape[0], 10
             dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, size),
-                                       'y': np.zeros(size)})
+                                       'y': test_labels.reshape(test_labels.shape[0], )})
             base_model = DummyClassifier(strategy="uniform").fit(dummy_data['x'], dummy_data['y'])
 
         # Generate and Save Evaluation Metrics
