@@ -83,6 +83,11 @@ tanzu apps workload delete image-processor-api --yes
 kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y  -nargo
 ```
 
+* View progress:
+```
+kubectl get app ml-image-processing-pipeline-app -nargo -oyaml
+```
+
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
 
 * To delete the pipeline:
