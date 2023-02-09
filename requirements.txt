@@ -40,4 +40,5 @@ hickle
 python-multipart
 evidently
 pysqlite3-binary
+kfp
 .

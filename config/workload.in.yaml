@@ -10,7 +10,7 @@ spec:
   #image: index.docker.io/oawofolu/image-processor-default@sha256:ba3df083e2abf17117488d918ba2321ec7ba9999981077416725cb3f34b09c6e
   params:
     - name: clusterBuilder
-      value: base
+      value: full
   env:
     - name: MLFLOW_TRACKING_URI
       value: http://mlflow.${DATA_E2E_BASE_URL}
