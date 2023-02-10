@@ -11,4 +11,4 @@ spec:
         - name: image-processor
           port: 8080
   virtualhost:
-    fqdn: image-processor-YOUR_SESSION_NAMESPACE.${DATA_E2E_BASE_URL}
+    fqdn: image-processor-api-kfp-YOUR_SESSION_NAMESPACE.${DATA_E2E_BASE_URL}

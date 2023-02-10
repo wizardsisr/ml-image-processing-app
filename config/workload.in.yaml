@@ -2,10 +2,10 @@
 apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
-  name: image-processor
+  name: image-processor-kfpmain
   labels:
     apps.tanzu.vmware.com/workload-type: web
-    app.kubernetes.io/part-of: image-processor
+    app.kubernetes.io/part-of: image-processor-kfpmain
 spec:
   #image: index.docker.io/oawofolu/image-processor-default@sha256:ba3df083e2abf17117488d918ba2321ec7ba9999981077416725cb3f34b09c6e
   params:
@@ -18,4 +18,4 @@ spec:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git
       ref:
-        branch: main
+        branch: kfp-main
