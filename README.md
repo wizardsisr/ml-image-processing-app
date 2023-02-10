@@ -8,22 +8,6 @@ tanzu secret registry add tap-registry --username ${DATA_E2E_REGISTRY_USERNAME} 
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"},{"name": "tap-registry"}],"secrets":[{"name": "tap-registry"}]}'
 ```
 
-* Set up Argo:
-```
-source .env
-kubectl create ns argo
-kubectl apply -f config/argo-workflow.yaml -nargo
-envsubst < config/argo-workflow-http-proxy.in.yaml > config/argo-workflow-http-proxy.yaml
-kubectl apply -f config/argo-workflow-http-proxy.yaml -nargo
-kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=argo:default -n argo
-kubectl apply -f config/argo-workflow-rbac.yaml -nargo
-```
-
-* Login to Argo - copy the token from here:
-```
-kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath='{.items[0].metadata.name}') -- argo auth token
-```
-
 * Include the necessary buildpack dependencies:
 ```
 export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
@@ -80,17 +64,17 @@ tanzu apps workload delete image-processor-api --yes
 
 * Deploy the pipeline:
 ```
-kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y  -nargo
+kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y
 ```
 
 * View progress:
 ```
-kubectl get app ml-image-processing-pipeline-app -nargo -oyaml
+kubectl get app ml-image-processing-pipeline-app -oyaml
 ```
 
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
 
 * To delete the pipeline:
 ```
-kapp delete -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -y -nargo
+kapp delete -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -y
 ```
