@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       containers:
-        - image: python:3.10-slim
+        - image: oawofolu/ml-image-processor-kfp
           ports:
             - containerPort: 8080
           env:
