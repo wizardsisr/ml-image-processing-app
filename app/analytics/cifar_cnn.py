@@ -44,8 +44,8 @@ warnings.filterwarnings('ignore')
 
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
-    run_id = mlflow_utils.prep_mlflow_run()
-    with mlflow.start_run(run_id=run_id, run_name='upload_dataset', nested=True) as active_run:
+    with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
         mlflow.environment_variables.MLFLOW_HTTP_REQUEST_TIMEOUT = '3600'
         os.environ['MLFLOW_HTTP_REQUEST_TIMEOUT'] = '3600'
@@ -77,8 +77,8 @@ def upload_dataset(dataset, dataset_url=None):
 # ## Download DataSet
 def download_dataset(artifact):
     try:
-        run_id = mlflow_utils.prep_mlflow_run()
-        with mlflow.start_run(run_id=run_id, run_name='download_dataset', nested=True) as active_run:
+        with mlflow.start_run(run_name='download_dataset', nested=True) as active_run:
+            mlflow_utils.prep_mlflow_run(active_run)
             artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
             with mlflow.start_run(run_id=artifact_run_id, nested='True'):
                 uri = mlflow.get_artifact_uri(artifact_path=artifact)
@@ -100,8 +100,8 @@ def download_dataset(artifact):
 
 def download_model(model_name, model_flavor, best_run_id=None, retries=2):
     model, version = None, 0
-    run_id = mlflow_utils.prep_mlflow_run()
-    with mlflow.start_run(run_id=run_id, run_name='download_model', nested=True) as active_run:
+    with mlflow.start_run(run_name='download_model', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         try:
             client = MlflowClient()
             if best_run_id:
@@ -126,8 +126,8 @@ def download_model(model_name, model_flavor, best_run_id=None, retries=2):
 
 # ## Train Model
 def train_model(model_name, model_flavor, model_stage, data, epochs=10):
-    run_id = mlflow_utils.prep_mlflow_run()
-    with mlflow.start_run(run_id=run_id, run_name='train_model', nested=True) as active_run:
+    with mlflow.start_run(run_name='train_model', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
         client = MlflowClient()
         # Build and Compile Model
@@ -177,8 +177,8 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
 def evaluate_model(model_name, model_flavor):
     experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
 
-    run_id = mlflow_utils.prep_mlflow_run()
-    with mlflow.start_run(run_id=run_id, run_name='evaluate_model', nested=True) as active_run:
+    with mlflow.start_run(run_name='evaluate_model', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         best_runs = mlflow.search_runs(experiment_names=[experiment_name],
                                        filter_string="attributes.run_name='train_model'",
                                        order_by=['metrics.testing_accuracy DESC'],
@@ -203,8 +203,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
     The model that performs better based on specific metrics is then promoted to Staging.
     """
 
-    run_id = mlflow_utils.prep_mlflow_run()
-    with mlflow.start_run(run_id=run_id, run_name='promote_model_to_staging', nested=True) as active_run:
+    with mlflow.start_run(run_name='promote_model_to_staging', nested=True) as active_run:
+        mlflow_utils.prep_mlflow_run(active_run)
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
         client = MlflowClient()
 
