@@ -5,4 +5,4 @@ git_repo: https://github.com/agapebondservant/ml-image-processing-app.git
 experiment_name: convolutional_neural_network_team_kfpmain
 environment_name: kfp-main
 kfp_host: http://kubeflow-pipelines.tanzudatatap.ml
-use_cache: no
+use_cache: n
