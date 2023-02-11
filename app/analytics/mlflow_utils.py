@@ -25,13 +25,13 @@ def get_root_run(active_run_id=None):
         return parent_run_id
     else:
         mlflow.set_tags({'runlevel': 'root'})
-        return active_run_id
+        return get_current_run()  # active_run_id
 
 
 def start_new_root_run():
     root_run_id = get_root_run()
     MlflowClient().set_terminated(root_run_id) if root_run_id else True
-    mlflow.end_run()
+    # mlflow.end_run()
     mlflow.set_tags({'runlevel': 'root'})
 
 
