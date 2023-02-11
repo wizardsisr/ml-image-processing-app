@@ -22,3 +22,5 @@ spec:
               value: #@ data.values.environment_name
             - name: KUBEFLOW_PIPELINES_HOST
               value: #@ data.values.kfp_host
+            - name: USE_CACHE
+              value: #@ data.values.use_cache
