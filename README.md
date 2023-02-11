@@ -85,7 +85,7 @@ kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifa
 
 * View progress:
 ```
-kubectl get app ml-image-processing-pipeline-app -nargo -oyaml
+kubectl get app ml-image-processing-pipeline-<THE PIPELINE ENVIRONMENT> -oyaml  -nargo
 ```
 
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>

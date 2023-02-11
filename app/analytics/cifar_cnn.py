@@ -254,7 +254,7 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
             client.transition_model_version_stage(
                 name=base_model_name,
-                version=base_model_version + 1,
+                version=int(base_model_version) + 1,
                 stage="Staging"
             )
         else:
