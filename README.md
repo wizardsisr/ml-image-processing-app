@@ -64,17 +64,17 @@ tanzu apps workload delete image-processor-api --yes
 
 * Deploy the pipeline:
 ```
-kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y
+kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y  -nargo
 ```
 
 * View progress:
 ```
-kubectl get app ml-image-processing-pipeline-<THE PIPELINE ENVIRONMENT> -oyaml
+kubectl get app ml-image-processing-pipeline-<THE PIPELINE ENVIRONMENT> -oyaml  -nargo
 ```
 
 * View the pipeline in the browser by navigating to http://kubeflow-pipelines.<your-domain-name>
 
 * To delete the pipeline:
 ```
-kapp delete -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -y
+kapp delete -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -y -nargo
 ```

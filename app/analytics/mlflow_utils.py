@@ -41,3 +41,11 @@ def get_current_run():
 
 def prep_mlflow_run(active_run):
     mlflow.set_tags({'mlflow.parentRunId': get_root_run(active_run_id=active_run.info.run_id)})
+
+
+def get_experiment_metrics():
+    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
+    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
+                              output_format='list')
+    return runs[0].data.metrics if len(runs) else None
+
