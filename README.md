@@ -88,7 +88,11 @@ kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifa
 kubectl get app ml-image-processing-pipeline-<THE PIPELINE ENVIRONMENT> -oyaml  -nargo
 ```
 
-* View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name>
+* View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name> -
+access the Login token by running
+```
+kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath='{.items[0].metadata.name}') -- argo auth token
+```
 
 * To delete the pipeline:
 ```
