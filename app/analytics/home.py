@@ -25,6 +25,11 @@ span.predictedlabel{
     color: green;
 }
 
+span.metriclabel{
+    font-size: 1em;
+    color: wheat;
+}
+
 @keyframes blinker {
   50% {
     opacity: 0;
@@ -52,6 +57,9 @@ with tab1:
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
+                metric = cifar_cnn.get_metrics('f1_score') or 'None available'
+                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metric}</span>",
+                            unsafe_allow_html=True)
             else:
                 st.header('Please wait...')
                 st.text('(Training is in progress)')
@@ -68,6 +76,9 @@ with tab2:
             prediction = cifar_cnn.predict(mri_img, config.model_name, config.model_stage)  # TODO: Use MRI Model
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
+                            unsafe_allow_html=True)
+                metric = cifar_cnn.get_metrics('f1_score') or 'None available'
+                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metric}</span>",
                             unsafe_allow_html=True)
             else:
                 st.header('Please wait...')

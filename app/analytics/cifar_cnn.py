@@ -242,6 +242,9 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
         # Determine the best model
         tests_results_json_tests = json.loads(tests_results_json)['tests']
+        accuracy_results = np.array([test for test in tests_results_json_tests if test['name'] == 'F1 Score'])
+        if len(accuracy_results):
+            client.log_metric(artifact_run_id, 'f1_score', accuracy_results[0]['parameters']['f1'])
         accuracy_results = np.array([test for test in tests_results_json_tests if test['name'] == 'Accuracy Score'])
         if len(accuracy_results):
             client.log_metric(artifact_run_id, 'accuracy_score', accuracy_results[0]['parameters']['accuracy'])
@@ -283,6 +286,12 @@ def predict(img, model_name, model_stage):
     logging.info(
         f'Predictions in order...list={prediction_results}, index={np.argmax(prediction_results)}, prediction={prediction}')
     return prediction
+
+
+# ## Get Metrics
+def get_metrics(metric_name):
+    metrics = mlflow_utils.get_experiment_metrics()
+    return metrics.get(metric_name) if metrics else None
 
 
 def _tensors_to_1d_prediction_and_target(tensor_data, tensor_labels, tensor_model):
