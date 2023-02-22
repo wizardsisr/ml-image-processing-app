@@ -58,6 +58,17 @@ tanzu apps workload delete image-processor --yes
 tanzu apps workload delete image-processor-api --yes
 ```
 
+### Set up the Training DB
+* Deploy the Postgres training instance:
+```
+kubectl apply -f config/db/postgres/postgres-training-cluster.yaml
+```
+
+### Set up the Inference DB
+```
+kubectl apply -f config/db/postgres/postgres-inference-cluster.yaml
+```
+
 ### Deploy the Training Pipeline
 * cd to </root/of/branch/directory/with/appropriate/model/stage> 
 (Example: the **main** github branch represents the "main" environment, the **staging** github branch represents the "staging" environment, etc)
