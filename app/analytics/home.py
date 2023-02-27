@@ -57,8 +57,10 @@ with tab1:
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
-                metric = cifar_cnn.get_metrics('f1_score') or 'None available'
-                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metric}</span>",
+                metrics = cifar_cnn.get_metrics()
+                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metrics.get('f1_score') or 'None available'}</span>",
+                            unsafe_allow_html=True)
+                st.markdown(f"<br/>Accuracy metric:<br/> <span class='metriclabel'>{metrics.get('accuracy_score') or 'None available'}</span>",
                             unsafe_allow_html=True)
             else:
                 st.header('Please wait...')
@@ -77,8 +79,10 @@ with tab2:
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
-                metric = cifar_cnn.get_metrics('f1_score') or 'None available'
-                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metric}</span>",
+                metrics = cifar_cnn.get_metrics()
+                st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metrics.get('f1_score') or 'None available'}</span>",
+                            unsafe_allow_html=True)
+                st.markdown(f"<br/>Accuracy metric:<br/> <span class='metriclabel'>{metrics.get('accuracy_score') or 'None available'}</span>",
                             unsafe_allow_html=True)
             else:
                 st.header('Please wait...')
