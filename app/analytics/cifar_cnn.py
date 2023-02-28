@@ -224,8 +224,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
             base_model = DummyClassifier().fit(dummy_data['x'], dummy_data['y'])
 
         # Generate and Save Evaluation Metrics
-        curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model)
-        ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+        curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+        ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model)
         tests = TestSuite(tests=[
             MulticlassClassificationTestPreset()
         ])
