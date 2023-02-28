@@ -197,7 +197,7 @@ def evaluate_model(model_name, model_flavor):
 
 
 # ## Promote Model to Staging
-def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_dataset_name, model_flavor):
+def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_dataset_name, model_flavor, use_prior_version_as_base=False):
     """
     Evaluates the performance of the currently trained candidate model compared to the base model.
     The model that performs better based on specific metrics is then promoted to Staging.
@@ -216,16 +216,17 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         test_labels = _data.get('test_labels')
         preexisting_base_model_found = base_model is not None
 
-        if not preexisting_base_model_found:
-            logging.info(f"No prior base model found with name {base_model_name}; preparing dummy model...")
+        if _can_use_dummy_model_as_base(preexisting_base_model_found, use_prior_version_as_base):
+            logging.info(f"No prior base model found with name {base_model_name}" if use_prior_version_as_base else "Will use dummy model.")
+            logging.info(f"Preparing dummy model...")
             size, num_classes = test_labels.shape[0], 10
             dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, size),
                                        'y': test_labels.reshape(size, )})
             base_model = DummyClassifier().fit(dummy_data['x'], dummy_data['y'])
 
         # Generate and Save Evaluation Metrics
-        curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model)
-        ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+        curr_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, candidate_model)
+        ref_data = _tensors_to_1d_prediction_and_target(test_data, test_labels, base_model)
         tests = TestSuite(tests=[
             MulticlassClassificationTestPreset()
         ])
@@ -301,3 +302,7 @@ def _tensors_to_1d_prediction_and_target(tensor_data, tensor_labels, tensor_mode
     data = pd.DataFrame({'prediction': np.fromiter((np.argmax(x) for x in predictions), dtype='int'),
                          'target': tensor_labels.reshape(tensor_labels.shape[0], )})
     return data
+
+
+def _can_use_dummy_model_as_base(preexisting_base_model_found, use_prior_version_as_base):
+    return not use_prior_version_as_base or not preexisting_base_model_found
