@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pylab import rcParams
 import warnings
+import seaborn as sns
 import tensorflow
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.preprocessing.image import load_img
