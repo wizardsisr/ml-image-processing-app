@@ -1,3 +1,9 @@
+import logging
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler())
+logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
+warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +18,6 @@ from sklearn.dummy import DummyClassifier
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
-import logging
 import pathlib
 import mlflow
 from mlflow import MlflowClient
@@ -34,12 +39,6 @@ from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
 from evidently.test_suite import TestSuite
 from evidently.test_preset import MulticlassClassificationTestPreset
-
-logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().addHandler(logging.StreamHandler())
-logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
-warnings.filterwarnings('ignore')
 
 
 # ## Upload dataset
