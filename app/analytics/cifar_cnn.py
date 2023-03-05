@@ -37,6 +37,8 @@ from evidently.test_preset import MulticlassClassificationTestPreset
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler())
+logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
 warnings.filterwarnings('ignore')
 
 
