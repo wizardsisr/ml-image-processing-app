@@ -26,3 +26,7 @@ entry_points:
         dataset-name: {default: "cifar10"}
         model-flavor: {default: "tensorflow"}
     command: '$(which python3.9) -c "from app.analytics import cifar_cnn; cifar_cnn.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")"'
+  dummy:
+    parameters:
+        base_model-name: {default: "cifar_cnn"}
+    command: 'echo Hello'
