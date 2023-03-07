@@ -70,6 +70,14 @@ kubectl apply -f config/db/postgres/postgres-inference-cluster.yaml
 ```
 
 ### Deploy the Training Pipeline
+* Setup pipeline credentials by adding them to Vault (they will later be injected into the pipeline via the External Secrets controller):
+```
+source .env
+kubectl cp $DATA_E2E_GREENPLUM_PEM vault/vault-0:/tmp
+kubectl exec vault-0 -n vault -- vault kv put secret/greenplum/default/training pem=@/tmp/$DATA_E2E_GREENPLUM_PEM password=$DATA_E2E_GREENPLUM_PASSWORD
+kubectl exec vault-0 -n vault -- vault kv put secret/postgres/default/inference password=$(kubectl get secret pginstance-inference-db-secret -n ${DATA_E2E_POSTGRES_INFERENCE_CLUSTER_NAMESPACE} -o jsonpath="{.data.password}" | base64 --decode)
+```
+
 * cd to </root/of/branch/directory/with/appropriate/model/stage> 
 (Example: the **main** github branch represents the "main" environment, the **staging** github branch represents the "staging" environment, etc)
 

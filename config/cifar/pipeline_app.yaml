@@ -12,6 +12,7 @@ spec:
   template:
     - ytt:
         paths:
+          - config/cifar/pipeline_external_secrets
           - config/cifar/pipeline.yaml
           - config/cifar/values.yaml
 
