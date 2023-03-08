@@ -151,7 +151,7 @@ spec:
           - name: external_secret_ref
           - name: external_secret_ref_key
       script:
-        image: liquibase
+        container: liquibase
         env:
           - name: HOST_PASSWORD
             valueFrom:
@@ -159,13 +159,13 @@ spec:
                 name: {{input.parameters.external_secret_ref}}
                 key: {{input.parameters.external_secret_ref_key}}
         command: [liquibase]
-        source: |
-          --search-path={{input.parameters.shared_path}} \
-          update \
-          --changelog-file={{input.parameters.db_script}} \
-          --url=jdbc:postgresql://{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require \
-          --username={{input.parameters.user}} \
-          --password=${HOST_PASSWORD}
+        args:
+          - --search-path="{{input.parameters.shared_path}}"
+          - update
+          - --changelog-file="{{input.parameters.db_script}}"
+          - --url=jdbc:postgresql://{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require
+          - --username="{{input.parameters.user}}"
+          - --password="${HOST_PASSWORD}"
     - name: run_training
       inputs:
         parameters:
