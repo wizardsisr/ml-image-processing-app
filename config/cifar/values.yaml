@@ -6,9 +6,11 @@ experiment_name: convolutional_neural_network_team_gpmain
 environment_name: gp-main
 greenplum_shared_path: /usr/local/greenplum-db/bin/plcontainer_clients
 greenplum_user: gpadmin
+greenplum_master: 54.157.211.183
 greenplum_training_db_name: dev
 greenplum_external_secret_ref: greenplum-training-external-secret
 greenplum_external_secret_ref_key: greenplum_password
+greenplum_db_schema: public
 mlpipeline_git_repo: https://github.com/agapebondservant/ml-image-processing-app-argopipeline-step.git
 pyfunction_vendored_dependencies_uri: https://tolatest-temp-resources.s3.us-east-2.amazonaws.com/vendor.tar.gz
 postgres_user: pgadmin
@@ -23,3 +25,4 @@ inference_shell_script: config/cifar/scripts/shell/deploy_python_inference_code.
 postgres_external_secret_ref: postgres-inference-external-secret
 postgres_external_secret_ref_key: postgres_password
 postgres_inference_namespace: default
+inference_db_schema: public

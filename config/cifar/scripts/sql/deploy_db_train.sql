@@ -1,4 +1,5 @@
-CREATE OR REPLACE FUNCTION run_inference_task (mlflow_stage text,
+--changeset gpadmin:XYZCHANGESETID
+CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_training_task (mlflow_stage text,
                                         git_repo text,
                                         entry_point text,
                                         experiment_name text,

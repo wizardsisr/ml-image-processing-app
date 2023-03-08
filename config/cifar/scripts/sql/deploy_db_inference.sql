@@ -1,5 +1,6 @@
+--changeset pgadmin:XYZCHANGESETID
 CREATE EXTENSION 'plpython3u';
-CREATE OR REPLACE FUNCTION run_inference_task (model_name text, model_stage text)
+CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (model_name text, model_stage text, app_location text)
 RETURNS TEXT
 AS $$
     # container: plc_python3_shared

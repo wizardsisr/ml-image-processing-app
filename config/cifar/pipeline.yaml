@@ -27,6 +27,10 @@ spec:
                   value: #@ data.values.greenplum_shared_path + "/creds/greenplum_pem"
                 - name: shell_script
                   value: #@ data.values.training_shell_script
+                - name: db_script
+                  value: #@ data.values.training_db_script
+                - name: db_schema
+                  value: #@ data.values.greenplum_db_schema
         - - name: deploy-training-db
             template: deploy_db
             arguments:
@@ -81,6 +85,10 @@ spec:
                   value: #@ data.values.greenplum_shared_path + "/creds/greenplum_pem"
                 - name: shell_script
                   value: #@ data.values.inference_shell_script
+                - name: db_script
+                  value: #@ data.values.inference_db_script
+                - name: db_schema
+                  value: #@ data.values.inference_db_schema
         - - name: deploy-inference-db
             template: deploy_db
             arguments:
@@ -105,6 +113,8 @@ spec:
           - name: shared_path
           - name: pem_file
           - name: shell_script
+          - name: db_script
+          - name: db_schema
           - name: git_repo
             value: #@ data.values.git_repo
           - name: mlpipeline_git_repo
@@ -128,7 +138,9 @@ spec:
           MLPIPELINE_GIT_REPO={{input.parameters.mlpipeline_git_repo}} \
           PYFUNC_VENDOR_URI={{input.parameters.pyfunction_vendored_dependencies_uri}} \
           NAMESPACE={{input.parameters.inference_namespace}} \
-          {{input.parameters.shell_script}}
+          DB_SCRIPT={{input.parameters.db_script}} \
+          DB_SCHEMA={{input.parameters.db_schema}} \
+          {{input.parameters.shared_path}}/{{input.parameters.shell_script}}
     - name: deploy_db
       inputs:
         parameters:
@@ -146,10 +158,14 @@ spec:
               secretKeyRef:
                 name: {{input.parameters.external_secret_ref}}
                 key: {{input.parameters.external_secret_ref_key}}
-        command: [psql]
+        command: [liquibase]
         source: |
-          postgresql://{{input.parameters.user}}:${HOST_PASSWORD}@{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require -f
-            {{input.parameters.db_script}}
+          --search-path={{input.parameters.shared_path}} \
+          update \
+          --changelog-file={{input.parameters.db_script}} \
+          --url=jdbc:postgresql://{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require \
+          --username={{input.parameters.user}} \
+          --password=${HOST_PASSWORD}
     - name: run_training
       inputs:
         parameters:
