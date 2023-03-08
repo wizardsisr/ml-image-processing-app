@@ -1,7 +1,7 @@
 apiVersion: kappctrl.k14s.io/v1alpha1
 kind: App
 metadata:
-  name: ml-image-processing-pipeline-app-kfpmain
+  name: ml-image-processing-pipeline-app-gpmain
 spec:
   serviceAccountName: default
   fetch:
