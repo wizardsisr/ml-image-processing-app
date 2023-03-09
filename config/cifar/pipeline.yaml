@@ -14,7 +14,7 @@ spec:
     - name: train
       steps:
         - - name: deploy-training-code
-            template: deploy_code
+            template: deploy-code
             arguments:
               parameters:
                 - name: user
@@ -32,7 +32,7 @@ spec:
                 - name: db_schema
                   value: #@ data.values.greenplum_db_schema
         - - name: deploy-training-db
-            template: deploy_db
+            template: deploy-db
             arguments:
               parameters:
                 - name: user
@@ -48,31 +48,31 @@ spec:
                 - name: external_secret_ref_key
                   value: #@ data.values.greenplum_external_secret_ref_key
         - - name: upload-dataset
-            template: run_training
+            template: run-training
             arguments:
               parameters:
                 - name: mlflow_entry
                   value: "upload_dataset"
         - - name: train-model
-            template: run_training
+            template: run-training
             arguments:
               parameters:
                 - name: mlflow_entry
                   value: "train_model"
         - - name: evaluate-model
-            template: run_training
+            template: run-training
             arguments:
               parameters:
                 - name: mlflow_entry
                   value: "evaluate_model"
         - - name: promote-model-to-staging
-            template: run_training
+            template: run-training
             arguments:
               parameters:
                 - name: mlflow_entry
                   value: "promote_model_to_staging"
         - - name: deploy-inference-code
-            template: deploy_code
+            template: deploy-code
             arguments:
               parameters:
                 - name: user
@@ -90,7 +90,7 @@ spec:
                 - name: db_schema
                   value: #@ data.values.inference_db_schema
         - - name: deploy-inference-db
-            template: deploy_db
+            template: deploy-db
             arguments:
               parameters:
                 - name: user
@@ -105,7 +105,7 @@ spec:
                   value: #@ data.values.postgres_external_secret_ref
                 - name: external_secret_ref_key
                   value: #@ data.values.postgres_external_secret_ref_key
-    - name: deploy_code
+    - name: deploy-code
       inputs:
         parameters:
           - name: user
@@ -141,7 +141,7 @@ spec:
           DB_SCRIPT="{{input.parameters.db_script}}" \
           DB_SCHEMA="{{input.parameters.db_schema}}" \
           {{input.parameters.shared_path}}/{{input.parameters.shell_script}}
-    - name: deploy_db
+    - name: deploy-db
       inputs:
         parameters:
           - name: user
@@ -166,7 +166,7 @@ spec:
           --url="jdbc:postgresql://{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require" \
           --username="{{input.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
-    - name: run_training
+    - name: run-training
       inputs:
         parameters:
           - name: mlflow_entry
