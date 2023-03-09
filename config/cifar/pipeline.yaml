@@ -151,9 +151,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-db-source
-            path: "{{input.parameters.shared_path}}"
+            path: #@ data.values.git_repo
             git:
-              repo: "{{input.parameters.git_repo}}"
+              repo: #@ data.values.git_repo
         parameters:
           - name: user
           - name: host
