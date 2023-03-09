@@ -109,9 +109,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "{{input.parameters.shared_path}}"
+            path: #@ data.values.git_repo
             git:
-              repo: "{{input.parameters.git_repo}}"
+              repo: #@ data.values.git_repo
         parameters:
           - name: user
           - name: host
@@ -167,8 +167,8 @@ spec:
           - name: HOST_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: "{{input.parameters.external_secret_ref}}"
-                key: "{{input.parameters.external_secret_ref_key}}"
+                name: #@ data.values.external_secret_ref
+                key: #@ data.values.external_secret_ref_key}
         command: [liquibase]
         source: |
           --search-path="{{input.parameters.shared_path}}" \
