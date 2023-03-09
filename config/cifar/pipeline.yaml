@@ -110,7 +110,8 @@ spec:
         artifacts:
           - name: deploy-code-source
             path: "{{input.parameters.shared_path}}"
-            git: "{{input.parameters.git_repo}}"
+            git:
+              repo: "{{input.parameters.git_repo}}"
         parameters:
           - name: user
           - name: host
@@ -151,7 +152,8 @@ spec:
         artifacts:
           - name: deploy-db-source
             path: "{{input.parameters.shared_path}}"
-            git: "{{input.parameters.git_repo}}"
+            git:
+              repo: "{{input.parameters.git_repo}}"
         parameters:
           - name: user
           - name: host
