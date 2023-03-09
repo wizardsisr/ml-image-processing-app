@@ -107,6 +107,10 @@ spec:
                   value: #@ data.values.postgres_external_secret_ref_key
     - name: deploy-code
       inputs:
+        artifacts:
+          - name: deploy-code-source
+            path: "{{input.parameters.shared_path}}"
+            git: "{{input.parameters.git_repo}}"
         parameters:
           - name: user
           - name: host
@@ -129,6 +133,7 @@ spec:
           - name: secret-vol
             mountPath: "{{input.parameters.shared_path}}/creds"
         command: [bash]
+        workingDir: "{{input.parameters.shared_path}}"
         source: |
           SCP_PEM_PATH="{{input.parameters.pem_file}}" \
           USER="{{input.parameters.user}}" \
@@ -140,9 +145,13 @@ spec:
           NAMESPACE="{{input.parameters.inference_namespace}}" \
           DB_SCRIPT="{{input.parameters.db_script}}" \
           DB_SCHEMA="{{input.parameters.db_schema}}" \
-          {{input.parameters.shared_path}}/{{input.parameters.shell_script}}
+          {{input.parameters.shell_script}}
     - name: deploy-db
       inputs:
+        artifacts:
+          - name: deploy-db-source
+            path: "{{input.parameters.shared_path}}"
+            git: "{{input.parameters.git_repo}}"
         parameters:
           - name: user
           - name: host
