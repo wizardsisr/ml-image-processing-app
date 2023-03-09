@@ -167,8 +167,8 @@ spec:
           - name: HOST_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: #@ data.values.external_secret_ref
-                key: #@ data.values.external_secret_ref_key
+                name: "{{input.parameters.external_secret_ref}}"
+                key: "{{input.parameters.external_secret_ref_key}}"
         command: [liquibase]
         source: |
           --search-path="{{input.parameters.shared_path}}" \
