@@ -149,10 +149,10 @@ spec:
           DB_SCRIPT="{{inputs.parameters.db_script}}" \
           DB_SCHEMA="{{inputs.parameters.db_schema}}" \
           "{{inputs.parameters.shell_script}}"
-        initContainers:
-          - name: fix-permissions
-            image: alpine:latest
-            command: [ "chmod", "600", "{{inputs.parameters.pem_file}}" ]
+      initContainers:
+        - name: fix-permissions
+          image: alpine:latest
+          command: [ "chmod", "600", "{{inputs.parameters.pem_file}}" ]
     - name: deploy-db
       inputs:
         artifacts:
