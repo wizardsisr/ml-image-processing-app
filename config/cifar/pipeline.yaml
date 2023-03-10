@@ -176,7 +176,7 @@ spec:
         command: [bash]
         workingDir: "/liquibase"
         source: |
-          --search-path="/usr/local" \
+          --search-path="/liquibase" \
           --changelog-file="{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
