@@ -109,9 +109,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: {{input.parameters.shared_path}}
+            path: "/usr/local"
             git:
-              repo: {{input.parameters.git_repo}}
+              repo: #@ data.values.git_repo
         parameters:
           - name: user
           - name: host
@@ -134,7 +134,7 @@ spec:
           - name: secret-vol
             mountPath: "{{input.parameters.shared_path}}/creds"
         command: [bash]
-        workingDir: "{{input.parameters.shared_path}}"
+        workingDir: "/usr/local"
         source: |
           SCP_PEM_PATH="{{input.parameters.pem_file}}" \
           USER="{{input.parameters.user}}" \
@@ -151,9 +151,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: {{input.parameters.shared_path}}
+            path: "/usr/local"
             git:
-              repo: {{input.parameters.git_repo}}
+              repo: #@ data.values.git_repo
         parameters:
           - name: user
           - name: host
@@ -170,8 +170,9 @@ spec:
                 name: "{{input.parameters.external_secret_ref}}"
                 key: "{{input.parameters.external_secret_ref_key}}"
         command: [liquibase]
+        workingDir: "/usr/local"
         source: |
-          --search-path="{{input.parameters.shared_path}}" \
+          --search-path="/usr/local" \
           update \
           --changelog-file="{{input.parameters.db_script}}" \
           --url="jdbc:postgresql://{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require" \
