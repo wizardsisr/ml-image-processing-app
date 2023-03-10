@@ -131,7 +131,7 @@ spec:
           - name: inference_namespace
             value: #@ data.values.postgres_inference_namespace
       script:
-        image: debian
+        image: busybox
         volumeMounts:
           - name: secret-vol
             mountPath: "{{inputs.parameters.shared_path}}/creds"
