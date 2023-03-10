@@ -198,11 +198,11 @@ spec:
         -  name: update-script
            image: busybox
            command:
-          - /bin/sh {DB_SCHEMA}/g;\" ${SHARED_PATH}/${DB_SCRIPT}
-          - DB_SCHEMA="{{inputs.parameters.db_schema}}" \
-            SHARED_PATH="{{inputs.parameters.shared_path}}" \
-            DB_SCRIPT="{{inputs.parameters.db_script}}" \
-            "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"
+            - /bin/sh {DB_SCHEMA}/g;\" ${SHARED_PATH}/${DB_SCRIPT}
+            - DB_SCHEMA="{{inputs.parameters.db_schema}}" \
+              SHARED_PATH="{{inputs.parameters.shared_path}}" \
+              DB_SCRIPT="{{inputs.parameters.db_script}}" \
+              "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"
     - name: run-training
       inputs:
         parameters:
