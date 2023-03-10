@@ -152,7 +152,7 @@ spec:
       initContainers:
         - name: fix-permissions
           image: alpine:latest
-          command: [ "chmod", "600", "{{inputs.parameters.pem_file}}" ]
+          command: [ "chmod", "-R", "600", "/usr/local" ]
     - name: deploy-db
       inputs:
         artifacts:
