@@ -112,6 +112,8 @@ spec:
             path: "/usr/local"
             git:
               repo: #@ data.values.git_repo
+              singleBranch: true
+              branch: #@ data.values.environment_name
         parameters:
           - name: user
           - name: host
@@ -154,6 +156,8 @@ spec:
             path: "/usr/local"
             git:
               repo: #@ data.values.git_repo
+              singleBranch: true
+              branch: #@ data.values.environment_name
         parameters:
           - name: user
           - name: host
