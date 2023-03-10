@@ -130,14 +130,14 @@ spec:
             value: #@ data.values.pyfunction_vendored_dependencies_uri
           - name: inference_namespace
             value: #@ data.values.postgres_inference_namespace
-      container:
+      script:
         image: debian
         volumeMounts:
           - name: secret-vol
             mountPath: "{{inputs.parameters.shared_path}}/creds"
         workingDir: "/usr/local"
         command: [bash]
-        script: |
+        source: |
           SCP_PEM_PATH="{{inputs.parameters.pem_file}}" \
           USER="{{inputs.parameters.user}}" \
           HOST="{{inputs.parameters.host}}" \
