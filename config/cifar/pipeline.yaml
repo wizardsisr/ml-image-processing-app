@@ -171,11 +171,10 @@ spec:
               secretKeyRef:
                 name: "{{inputs.parameters.external_secret_ref}}"
                 key: "{{inputs.parameters.external_secret_ref_key}}"
-        command: [liquibase]
+        command: [update]
         workingDir: "/usr/local"
         source: |
           --search-path="/usr/local" \
-          update \
           --changelog-file="{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
