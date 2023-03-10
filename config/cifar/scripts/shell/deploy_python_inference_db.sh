@@ -1,1 +1,1 @@
-echo "OK"
+sed -i \"s/XYZCHANGESETID/$(date +%s)/g; s/XYZDBSCHEMA/${DB_SCHEMA}/g;\" ${SHARED_PATH}/${DB_SCRIPT}

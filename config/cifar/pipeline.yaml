@@ -88,8 +88,6 @@ spec:
                   value: "usr/local/creds/greenplum_pem_file"
                 - name: shell_script
                   value: #@ data.values.inference_code_shell_script
-                - name: db_script
-                  value: #@ data.values.inference_db_script
         - - name: deploy-inference-db
             template: deploy-db
             arguments:
@@ -127,8 +125,6 @@ spec:
           - name: shared_path
           - name: pem_file
           - name: shell_script
-          - name: db_script
-          - name: db_schema
           - name: git_repo
             value: #@ data.values.git_repo
           - name: mlpipeline_git_repo
@@ -156,8 +152,6 @@ spec:
           MLPIPELINE_GIT_REPO="{{inputs.parameters.mlpipeline_git_repo}}" \
           PYFUNC_VENDOR_URI="{{inputs.parameters.pyfunction_vendored_dependencies_uri}}" \
           NAMESPACE="{{inputs.parameters.inference_namespace}}" \
-          DB_SCRIPT="{{inputs.parameters.db_script}}" \
-          DB_SCHEMA="{{inputs.parameters.db_schema}}" \
           "{{inputs.parameters.shell_script}}"
     - name: deploy-db
       inputs:
