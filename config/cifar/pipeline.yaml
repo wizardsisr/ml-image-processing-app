@@ -131,12 +131,12 @@ spec:
           - name: inference_namespace
             value: #@ data.values.postgres_inference_namespace
       script:
-        image: busybox
+        image: ubuntu
         volumeMounts:
           - name: secret-vol
             mountPath: "{{inputs.parameters.shared_path}}/creds"
         workingDir: "/usr/local"
-        command: [/bin/sh]
+        command: [bash]
         source: |
           SCP_PEM_PATH="{{inputs.parameters.pem_file}}" \
           USER="{{inputs.parameters.user}}" \
