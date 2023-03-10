@@ -152,7 +152,10 @@ spec:
       initContainers:
         - name: fix-permissions
           image: busybox
-          command: [ "sh", "-c", "chmod -R 600 /usr/local" ]
+          command: [ "sh", "-c", "chmod -R 600 /usr/local/creds" ]
+          volumeMounts:
+            - name: secret-vol
+              mountPath: "usr/local/creds"
     - name: deploy-db
       inputs:
         artifacts:
