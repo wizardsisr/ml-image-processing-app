@@ -146,7 +146,7 @@ spec:
           HOST="{{inputs.parameters.host}}" \
           SHARED_PATH="{{inputs.parameters.shared_path}}" \
           GIT_REPO="{{inputs.parameters.git_repo}}" \
-          GIT_REPO_BRANCH="{{inputs.parameters.git_repo_branch}"\
+          GIT_REPO_BRANCH="{{inputs.parameters.git_repo_branch}}"\
           MLPIPELINE_GIT_REPO="{{inputs.parameters.mlpipeline_git_repo}}" \
           PYFUNC_VENDOR_URI="{{inputs.parameters.pyfunction_vendored_dependencies_uri}}" \
           NAMESPACE="{{inputs.parameters.inference_namespace}}" \
