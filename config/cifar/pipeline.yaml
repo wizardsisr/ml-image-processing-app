@@ -133,7 +133,7 @@ spec:
         image: debian
         volumeMounts:
           - name: secret-vol
-            mountPath: "{{input.parameters.shared_path}}"/creds
+            mountPath: "{{input.parameters.shared_path}}/creds"
         command: [bash]
         workingDir: "/usr/local"
         source: |
