@@ -10,6 +10,7 @@ spec:
     - name: secret-vol
       secret:
         secretName: greenplum-training-secret
+        defaultMode: 600
   templates:
     - name: train
       steps:
@@ -149,13 +150,6 @@ spec:
           DB_SCRIPT="{{inputs.parameters.db_script}}" \
           DB_SCHEMA="{{inputs.parameters.db_schema}}" \
           "{{inputs.parameters.shell_script}}"
-      initContainers:
-        - name: fix-permissions
-          image: busybox
-          command: [ "sh", "-c", "chmod -R 600 /usr/local/creds" ]
-          volumeMounts:
-            - name: secret-vol
-              mountPath: "usr/local/creds"
     - name: deploy-db
       inputs:
         artifacts:
