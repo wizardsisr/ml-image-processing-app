@@ -9,7 +9,7 @@ spec:
   volumes:
     - name: secret-vol
       secret:
-        secretName: greenplum-training-external-secret
+        secretName: greenplum-training-secret
   templates:
     - name: train
       steps:
@@ -109,7 +109,7 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "/src"
+            path: "/usr/local"
             git:
               repo: #@ data.values.git_repo
               revision: #@ data.values.git_repo_tag
@@ -135,7 +135,7 @@ spec:
           - name: secret-vol
             mountPath: "{{input.parameters.shared_path}}/creds"
         command: [bash]
-        workingDir: "/src"
+        workingDir: "/usr/local"
         source: |
           SCP_PEM_PATH="{{input.parameters.pem_file}}" \
           USER="{{input.parameters.user}}" \
@@ -152,7 +152,7 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "/usr/local"
+            path: "/usr/local/"
             git:
               repo: #@ data.values.git_repo
               revision: #@ data.values.git_repo_tag
@@ -208,7 +208,7 @@ spec:
           - name: GREENPLUM_TRAINING_MASTER_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: greenplum-training-external-secret
+                name: greenplum-training-secret
                 key: greenplum_password
         command: [psql]
         source: |

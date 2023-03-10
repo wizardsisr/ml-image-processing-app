@@ -9,7 +9,7 @@ greenplum_shared_path: /usr/local/greenplum-db/bin/plcontainer_clients
 greenplum_user: gpadmin
 greenplum_master: 54.157.211.183
 greenplum_training_db_name: dev
-greenplum_external_secret_ref: greenplum-training-external-secret
+greenplum_external_secret_ref: greenplum-training-secret
 greenplum_external_secret_ref_key: greenplum_password
 greenplum_db_schema: public
 mlpipeline_git_repo: https://github.com/agapebondservant/ml-image-processing-app-argopipeline-step.git
@@ -23,7 +23,7 @@ training_db_script: config/cifar/scripts/sql/deploy_db_training.sql
 inference_db_script: config/cifar/scripts/sql/deploy_db_inference.sql
 training_shell_script: config/cifar/scripts/shell/deploy_python_training_code.sh
 inference_shell_script: config/cifar/scripts/shell/deploy_python_inference_code.sh
-postgres_external_secret_ref: postgres-inference-external-secret
+postgres_external_secret_ref: postgres-inference-secret
 postgres_external_secret_ref_key: postgres_password
 postgres_inference_namespace: default
 inference_db_schema: public
