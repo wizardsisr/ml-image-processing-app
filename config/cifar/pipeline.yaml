@@ -112,7 +112,8 @@ spec:
             path: "/usr/local"
             git:
               repo: https://github.com/argoproj/argo-workflows.git
-              revision: "v2.1.1"
+              singleBranch: true
+              branch: master
         parameters:
           - name: user
           - name: host
