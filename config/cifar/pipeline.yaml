@@ -188,16 +188,14 @@ spec:
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
+          update
       initContainers:
         -  name: update-script
            image: busybox
            command:
             - /bin/sh
             - -c
-            - 'DB_SCHEMA="{{inputs.parameters.db_schema}}" \
-              SHARED_PATH="{{inputs.parameters.shared_path}}" \
-              DB_SCRIPT="{{inputs.parameters.db_script}}" \
-              "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"'
+            - 'DB_SCHEMA="{{inputs.parameters.db_schema}}" SHARED_PATH="{{inputs.parameters.shared_path}}" DB_SCRIPT="{{inputs.parameters.db_script}}" "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"'
     - name: run-training
       inputs:
         parameters:
