@@ -109,9 +109,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "{{input.parameters.shared_path}}"
+            path: {{input.parameters.shared_path}}
             git:
-              repo: "{{input.parameters.git_repo}}"
+              repo: {{input.parameters.git_repo}}
         parameters:
           - name: user
           - name: host
@@ -151,9 +151,9 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "{{input.parameters.shared_path}}"
+            path: {{input.parameters.shared_path}}
             git:
-              repo: "{{input.parameters.git_repo}}"
+              repo: {{input.parameters.git_repo}}
         parameters:
           - name: user
           - name: host
