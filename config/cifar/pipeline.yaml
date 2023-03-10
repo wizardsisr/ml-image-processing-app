@@ -174,9 +174,8 @@ spec:
                 name: "{{inputs.parameters.external_secret_ref}}"
                 key: "{{inputs.parameters.external_secret_ref_key}}"
         command: [bash]
-        workingDir: "/liquibase"
         source: |
-          --changelog-file="{{inputs.parameters.db_script}}" \
+          --changelog-file="/liquibase/{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
