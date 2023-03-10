@@ -164,7 +164,7 @@ spec:
           - name: external_secret_ref
           - name: external_secret_ref_key
       script:
-        image: liquibase
+        image: liquibase/liquibase
         env:
           - name: HOST_PASSWORD
             valueFrom:
