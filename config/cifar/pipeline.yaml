@@ -209,7 +209,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: greenplum-training-secret
-                key: greenplum_password
+                key: greenplum_master_password
         command: [psql]
         source: |
           postgresql://"{{inputs.parameters.user}}":${GREENPLUM_TRAINING_MASTER_PASSWORD}@"{{inputs.parameters.host}}":5432/"{{inputs.parameters.db_name}}"?sslmode=require -c

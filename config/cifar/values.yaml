@@ -10,7 +10,7 @@ greenplum_user: gpadmin
 greenplum_master: 54.157.211.183
 greenplum_training_db_name: dev
 greenplum_external_secret_ref: greenplum-training-secret
-greenplum_external_secret_ref_key: greenplum_password
+greenplum_external_secret_ref_key: greenplum_master_password
 greenplum_db_schema: public
 mlpipeline_git_repo: https://github.com/agapebondservant/ml-image-processing-app-argopipeline-step.git
 pyfunction_vendored_dependencies_uri: https://tolatest-temp-resources.s3.us-east-2.amazonaws.com/vendor.tar.gz
