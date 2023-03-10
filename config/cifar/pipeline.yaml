@@ -129,25 +129,25 @@ spec:
             value: #@ data.values.pyfunction_vendored_dependencies_uri
           - name: inference_namespace
             value: #@ data.values.postgres_inference_namespace
-      script:
+      container:
         image: debian
         volumeMounts:
           - name: secret-vol
-            mountPath: "{{input.parameters.shared_path}}/creds"
+            mountPath: "{{input.parameters.shared_path}}"/creds
         command: [bash]
         workingDir: "/usr/local"
         source: |
-          SCP_PEM_PATH="{{input.parameters.pem_file}}" \
-          USER="{{input.parameters.user}}" \
-          HOST="{{input.parameters.host}}" \
-          SHARED_PATH="{{input.parameters.shared_path}}" \
-          GIT_REPO="{{input.parameters.git_repo}}" \
-          MLPIPELINE_GIT_REPO="{{input.parameters.mlpipeline_git_repo}}" \
-          PYFUNC_VENDOR_URI="{{input.parameters.pyfunction_vendored_dependencies_uri}}" \
-          NAMESPACE="{{input.parameters.inference_namespace}}" \
-          DB_SCRIPT="{{input.parameters.db_script}}" \
-          DB_SCHEMA="{{input.parameters.db_schema}}" \
-          "{{input.parameters.shell_script}}"
+          - SCP_PEM_PATH="{{input.parameters.pem_file}}" \
+            USER="{{input.parameters.user}}" \
+            HOST="{{input.parameters.host}}" \
+            SHARED_PATH="{{input.parameters.shared_path}}" \
+            GIT_REPO="{{input.parameters.git_repo}}" \
+            MLPIPELINE_GIT_REPO="{{input.parameters.mlpipeline_git_repo}}" \
+            PYFUNC_VENDOR_URI="{{input.parameters.pyfunction_vendored_dependencies_uri}}" \
+            NAMESPACE="{{input.parameters.inference_namespace}}" \
+            DB_SCRIPT="{{input.parameters.db_script}}" \
+            DB_SCHEMA="{{input.parameters.db_schema}}" \
+            "{{input.parameters.shell_script}}"
     - name: deploy-db
       inputs:
         artifacts:
