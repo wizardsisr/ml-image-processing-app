@@ -147,7 +147,7 @@ spec:
           NAMESPACE="{{input.parameters.inference_namespace}}" \
           DB_SCRIPT="{{input.parameters.db_script}}" \
           DB_SCHEMA="{{input.parameters.db_schema}}" \
-          {{input.parameters.shell_script}}
+          "{{input.parameters.shell_script}}"
     - name: deploy-db
       inputs:
         artifacts:
@@ -212,11 +212,11 @@ spec:
                 key: greenplum_password
         command: [psql]
         source: |
-          postgresql://{{input.parameters.user}}:${GREENPLUM_TRAINING_MASTER_PASSWORD}@{{input.parameters.host}}:5432/{{input.parameters.db_name}}?sslmode=require -c
-          "SELECT run_training_task('{{inputs.parameters.mlflow_stage}}',
-                '{{inputs.parameters.git_repo}}',
-                '{{inputs.parameters.mlflow_stage}}',
-                '{{inputs.parameters.experiment_name}}',
-                '{{inputs.parameters.environment_name}}',
-                '{{inputs.parameters.mlflow_tracking_uri}}',
-                '{{input.parameters.shared_path}}/mlapp');"
+          postgresql://"{{input.parameters.user}}":${GREENPLUM_TRAINING_MASTER_PASSWORD}@"{{input.parameters.host}}":5432/"{{input.parameters.db_name}}"?sslmode=require -c
+          'SELECT run_training_task("{{inputs.parameters.mlflow_stage}}",
+                "{{inputs.parameters.git_repo}}",
+                "{{inputs.parameters.mlflow_stage}}",
+                "{{inputs.parameters.experiment_name}}",
+                "{{inputs.parameters.environment_name}}",
+                "{{inputs.parameters.mlflow_tracking_uri}}",
+                "{{input.parameters.shared_path}}/mlapp";'
