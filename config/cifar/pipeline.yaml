@@ -127,6 +127,8 @@ spec:
             value: #@ data.values.git_repo
           - name: mlpipeline_git_repo
             value: #@ data.values.mlpipeline_git_repo
+          - name: git_repo_branch
+            value: #@ data.values.environment_name
           - name: pyfunction_vendored_dependencies_uri
             value: #@ data.values.pyfunction_vendored_dependencies_uri
           - name: inference_namespace
@@ -144,6 +146,7 @@ spec:
           HOST="{{inputs.parameters.host}}" \
           SHARED_PATH="{{inputs.parameters.shared_path}}" \
           GIT_REPO="{{inputs.parameters.git_repo}}" \
+          GIT_REPO_BRANCH="{{inputs.parameters.git_repo_branch}"\
           MLPIPELINE_GIT_REPO="{{inputs.parameters.mlpipeline_git_repo}}" \
           PYFUNC_VENDOR_URI="{{inputs.parameters.pyfunction_vendored_dependencies_uri}}" \
           NAMESPACE="{{inputs.parameters.inference_namespace}}" \
