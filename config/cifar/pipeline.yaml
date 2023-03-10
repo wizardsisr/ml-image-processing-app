@@ -24,7 +24,7 @@ spec:
                 - name: shared_path
                   value: #@ data.values.greenplum_shared_path
                 - name: pem_file
-                  value: #@ data.values.greenplum_shared_path + "/creds/greenplum_pem"
+                  value: "/usr/local/creds/greenplum_pem"
                 - name: shell_script
                   value: #@ data.values.training_shell_script
                 - name: db_script
@@ -82,7 +82,7 @@ spec:
                 - name: shared_path
                   value: #@ data.values.postgres_shared_path
                 - name: pem_file
-                  value: #@ data.values.greenplum_shared_path + "/creds/greenplum_pem"
+                  value: "usr/local/creds/greenplum_pem"
                 - name: shell_script
                   value: #@ data.values.inference_shell_script
                 - name: db_script
@@ -131,10 +131,10 @@ spec:
           - name: inference_namespace
             value: #@ data.values.postgres_inference_namespace
       script:
-        image: ubuntu
+        image: kroniak/ssh-client
         volumeMounts:
           - name: secret-vol
-            mountPath: "{{inputs.parameters.shared_path}}/creds"
+            mountPath: "usr/local/creds"
         workingDir: "/usr/local"
         command: [bash]
         source: |
@@ -153,7 +153,7 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "/liquibase"
+            path: "/liquibase/src"
             git:
               repo: #@ data.values.git_repo
               singleBranch: true
@@ -175,7 +175,7 @@ spec:
                 key: "{{inputs.parameters.external_secret_ref_key}}"
         command: [bash]
         source: |
-          --changelog-file="/liquibase/{{inputs.parameters.db_script}}" \
+          --changelog-file="/liquibase/src/{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
