@@ -24,7 +24,7 @@ spec:
                 - name: shared_path
                   value: #@ data.values.greenplum_shared_path
                 - name: pem_file
-                  value: "/usr/local/creds/greenplum_pem"
+                  value: "/usr/local/creds/greenplum_pem_file"
                 - name: shell_script
                   value: #@ data.values.training_shell_script
                 - name: db_script
@@ -82,7 +82,7 @@ spec:
                 - name: shared_path
                   value: #@ data.values.postgres_shared_path
                 - name: pem_file
-                  value: "usr/local/creds/greenplum_pem"
+                  value: "usr/local/creds/greenplum_pem_file"
                 - name: shell_script
                   value: #@ data.values.inference_shell_script
                 - name: db_script
