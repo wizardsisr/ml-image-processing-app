@@ -10,7 +10,7 @@ spec:
     - name: secret-vol
       secret:
         secretName: greenplum-training-secret
-        defaultMode: 600
+        defaultMode: 0600
   templates:
     - name: train
       steps:
