@@ -193,10 +193,11 @@ spec:
            image: busybox
            command:
             - /bin/sh
-            - DB_SCHEMA="{{inputs.parameters.db_schema}}" \
+            - -c
+            - 'DB_SCHEMA="{{inputs.parameters.db_schema}}" \
               SHARED_PATH="{{inputs.parameters.shared_path}}" \
               DB_SCRIPT="{{inputs.parameters.db_script}}" \
-              "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"
+              "{{inputs.parameters.script_shared_path}}/{{inputs.parameters.shell_script}}"'
     - name: run-training
       inputs:
         parameters:
