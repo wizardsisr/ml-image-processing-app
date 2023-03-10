@@ -157,7 +157,7 @@ spec:
       inputs:
         artifacts:
           - name: deploy-code-source
-            path: "/liquibase/src"
+            path: "/liquibase"
             git:
               repo: #@ data.values.git_repo
               singleBranch: true
@@ -179,7 +179,7 @@ spec:
                 key: "{{inputs.parameters.external_secret_ref_key}}"
         command: [bash]
         source: |
-          --changelog-file="/liquibase/src/{{inputs.parameters.db_script}}" \
+          --changelog-file="/liquibase/{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
