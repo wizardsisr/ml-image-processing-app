@@ -151,8 +151,8 @@ spec:
           "{{inputs.parameters.shell_script}}"
       initContainers:
         - name: fix-permissions
-          image: alpine:latest
-          command: [ "chmod", "-R", "600", "/usr/local" ]
+          image: busybox
+          command: [ "sh", "-c", "chmod -R 600 /usr/local" ]
     - name: deploy-db
       inputs:
         artifacts:
