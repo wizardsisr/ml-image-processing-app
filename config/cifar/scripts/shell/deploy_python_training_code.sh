@@ -8,4 +8,4 @@ ssh -i ${SCP_PEM_PATH} ${USER}@${HOST} "rm -rf ${SHARED_PATH}/mlapp ${SHARED_PAT
 
                    git clone ${GIT_REPO} ${SHARED_PATH}/mlappbase; \
                    mv ${SHARED_PATH}/mlappbase/config ${SHARED_PATH};
-                   sed -i \"s/XYZCHANGESETID/$(date +%s)/g; s/XYZDBSCHEMA/${DB_SCHEMA}/g;\" ${SHARED_PATH}/${DB_SCRIPT}" 
+                   sed -i \"s/XYZCHANGESETID/$(date +%s)/g; s/XYZDBSCHEMA/${DB_SCHEMA}/g;\" ${SHARED_PATH}/${DB_SCRIPT}"

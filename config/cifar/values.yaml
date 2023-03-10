@@ -2,6 +2,7 @@
 ---
 model_stage: Staging
 git_repo: https://github.com/agapebondservant/ml-image-processing-app.git
+git_repo_tag: v1.0.0
 experiment_name: convolutional_neural_network_team_gpmain
 environment_name: gp-main
 greenplum_shared_path: /usr/local/greenplum-db/bin/plcontainer_clients

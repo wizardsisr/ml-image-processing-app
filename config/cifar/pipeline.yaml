@@ -112,8 +112,7 @@ spec:
             path: "/usr/local"
             git:
               repo: #@ data.values.git_repo
-              singleBranch: true
-              branch: #@ data.values.environment_name
+              revision: #@ data.values.git_repo_tag
         parameters:
           - name: user
           - name: host
@@ -156,8 +155,7 @@ spec:
             path: "/usr/local"
             git:
               repo: #@ data.values.git_repo
-              singleBranch: true
-              branch: #@ data.values.environment_name
+              revision: #@ data.values.git_repo_tag
         parameters:
           - name: user
           - name: host
