@@ -176,6 +176,7 @@ spec:
             value: #@ data.values.script_shared_path
       script:
         image: liquibase/liquibase
+        mirrorVolumeMounts: true
         env:
           - name: HOST_PASSWORD
             valueFrom:
