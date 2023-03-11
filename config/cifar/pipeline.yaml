@@ -230,7 +230,7 @@ spec:
                 key: greenplum_master_password
         command: [psql]
         source: |
-          postgresql://"{{inputs.parameters.user}}":${GREENPLUM_TRAINING_MASTER_PASSWORD}@"{{inputs.parameters.host}}":5432/"{{inputs.parameters.db_name}}"?sslmode=require -c
+          "postgresql://{{inputs.parameters.user}}:${GREENPLUM_TRAINING_MASTER_PASSWORD}@{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" -c
           'SELECT run_training_task("{{inputs.parameters.mlflow_stage}}",
                 "{{inputs.parameters.git_repo}}",
                 "{{inputs.parameters.mlflow_stage}}",
