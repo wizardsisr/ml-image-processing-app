@@ -185,12 +185,11 @@ spec:
                 key: "{{inputs.parameters.external_secret_ref_key}}"
         command: [bash]
         source: |
-          liquibase
+          liquibase update \
           --changelog-file="changelog/{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
-          --password="${HOST_PASSWORD}" \
-          update
+          --password="${HOST_PASSWORD}"
       initContainers:
         -  name: update-script
            image: busybox
