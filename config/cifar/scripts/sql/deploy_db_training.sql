@@ -15,7 +15,7 @@ AS $$
     import subprocess
     import logging
     logging.getLogger().addHandler(logging.StreamHandler())
-    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log"))
+    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug{entry_point}.log"))
     import importlib
     import pkgutil
     try:

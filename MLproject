@@ -8,7 +8,7 @@ entry_points:
   train_model:
     parameters:
         dataset-name: {default: "cifar10"}
-        model-name: {default: "cifar_cnn_kfp"}
+        model-name: {default: "cifar_cnn_gpmain"}
         model-flavor: {default: "tensorflow"}
         model-stage: {default: "None"}
         epochs: {type: float, default: 10}
@@ -16,13 +16,13 @@ entry_points:
   evaluate_model:
     parameters:
         dataset-name: {default: "cifar10"}
-        model-name: {default: "cifar_cnn_kfp"}
+        model-name: {default: "cifar_cnn_gpmain"}
         model-flavor: {default: "tensorflow"}
     command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn; cifar_cnn.evaluate_model(\"{model-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
   promote_model_to_staging:
     parameters:
         base_model-name: {default: "cifar_cnn"}
-        candidate-model-name: {default: "cifar_cnn_kfp"}
+        candidate-model-name: {default: "cifar_cnn_gpmain"}
         dataset-name: {default: "cifar10"}
         model-flavor: {default: "tensorflow"}
     command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn; cifar_cnn.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
