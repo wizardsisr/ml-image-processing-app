@@ -187,7 +187,7 @@ spec:
         source: |
           liquibase update \
           --changelog-file="changelog/{{inputs.parameters.db_script}}" \
-          --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
+          --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require&prepareThreshold=0" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}"
       initContainers:
