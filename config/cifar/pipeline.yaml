@@ -232,10 +232,10 @@ spec:
         source: |
           psql "postgresql://{{inputs.parameters.user}}:${GREENPLUM_TRAINING_MASTER_PASSWORD}@{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           -c \
-          'SELECT run_training_task("{{inputs.parameters.mlflow_stage}}",
-                "{{inputs.parameters.git_repo}}",
-                "{{inputs.parameters.mlflow_stage}}",
-                "{{inputs.parameters.experiment_name}}",
-                "{{inputs.parameters.environment_name}}",
-                "{{inputs.parameters.mlflow_tracking_uri}}",
+          'SELECT run_training_task("{{inputs.parameters.mlflow_stage}}", \
+                "{{inputs.parameters.git_repo}}", \
+                "{{inputs.parameters.mlflow_stage}}", \
+                "{{inputs.parameters.experiment_name}}", \
+                "{{inputs.parameters.environment_name}}", \
+                "{{inputs.parameters.mlflow_tracking_uri}}", \
                 "{{inputs.parameters.shared_path}}/mlapp";'
