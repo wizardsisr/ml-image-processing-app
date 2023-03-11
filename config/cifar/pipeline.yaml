@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  name: ml-image-processing-pipeline-gprun-training
+  name: ml-image-processing-workflow-gpmain
 spec:
   entrypoint: train
   volumes:
@@ -185,7 +185,7 @@ spec:
                 key: "{{inputs.parameters.external_secret_ref_key}}"
         command: [bash]
         source: |
-          --changelog-file="{{inputs.parameters.script_shared_path}}/{{inputs.parameters.db_script}}" \
+          --changelog-file="$(pwd)/{{inputs.parameters.db_script}}" \
           --url="jdbc:postgresql://{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
           --username="{{inputs.parameters.user}}" \
           --password="${HOST_PASSWORD}" \
