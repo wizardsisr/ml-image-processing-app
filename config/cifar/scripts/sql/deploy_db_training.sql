@@ -6,6 +6,7 @@ CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_training_task (mlflow_stage text,
                                         experiment_name text,
                                         environment_name text,
                                         mlflow_host text,
+                                        mlflow_s3_uri text,
                                         app_location text)
 RETURNS TEXT
 AS $$
@@ -15,11 +16,12 @@ AS $$
     import subprocess
     import logging
     logging.getLogger().addHandler(logging.StreamHandler())
-    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug{entry_point}.log"))
+    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log"))
     import importlib
     import pkgutil
     try:
         os.environ['MLFLOW_TRACKING_URI']=mlflow_host
+        os.environ['MLFLOW_S3_ENDPOINT_URL']=mlflow_s3_uri
         os.environ['git_repo']=git_repo
         os.environ['mlflow_entry']=entry_point
         os.environ['mlflow_stage']=mlflow_stage

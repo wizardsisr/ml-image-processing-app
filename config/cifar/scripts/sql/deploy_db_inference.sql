@@ -10,7 +10,7 @@ AS $$
     import subprocess
     import logging
     logging.getLogger().addHandler(logging.StreamHandler())
-    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug{entry_point}.log"))
+    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log"))
     try:
         sys.path.append(f'{app_location}/_vendor')
         sys.path.append(f'{app_location}')
