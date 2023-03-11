@@ -7,7 +7,7 @@ environment_name: gp-main
 script_shared_path: /liquibase/changelog
 mlpipeline_git_repo: https://github.com/agapebondservant/ml-image-processing-app-argopipeline-step.git
 pyfunction_vendored_dependencies_uri: https://tolatest-temp-resources.s3.us-east-2.amazonaws.com/vendor.tar.gz
-training_s3_uri: http://minio-ml.tanzumlai.com
+mlflow_s3_uri: http://minio-ml.tanzumlai.com
 
 training_shared_path: /usr/local/greenplum-db/bin/plcontainer_clients
 training_db_script: config/cifar/scripts/sql/deploy_db_training.sql
@@ -19,6 +19,7 @@ training_db_name: dev
 training_external_secret_ref: greenplum-training-secret
 training_external_secret_ref_key: greenplum_master_password
 training_db_schema: public
+training_image: kroniak/ssh-client
 
 inference_user: pgadmin
 inference_host: pginstance-inference.default.svc.cluster.local
@@ -32,3 +33,4 @@ inference_external_secret_ref: postgres-inference-secret
 inference_external_secret_ref_key: postgres_password
 inference_namespace: default
 inference_db_schema: public
+inference_image: alpine/k8s:1.23.17
