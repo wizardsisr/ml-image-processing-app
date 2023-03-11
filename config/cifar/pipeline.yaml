@@ -230,12 +230,12 @@ spec:
                 key: greenplum_master_password
         command: [bash]
         source: |
-          psql "postgresql://{{inputs.parameters.user}}:${GREENPLUM_TRAINING_MASTER_PASSWORD}@{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
-          -c \
-          'SELECT run_training_task("{{inputs.parameters.mlflow_stage}}",
-                "{{inputs.parameters.git_repo}}",
-                "{{inputs.parameters.mlflow_stage}}",
-                "{{inputs.parameters.experiment_name}}",
-                "{{inputs.parameters.environment_name}}",
-                "{{inputs.parameters.mlflow_tracking_uri}}", 
-                "{{inputs.parameters.shared_path}}/mlapp");'
+          echo "SELECT run_training_task(:'mlflow_stage', :'git_repo', :'entry_point', :'experiment_name', :'environment_name', :'mlflow_host', :'app_location')" \
+            | psql "postgresql://{{inputs.parameters.user}}:${GREENPLUM_TRAINING_MASTER_PASSWORD}@{{inputs.parameters.host}}:5432/{{inputs.parameters.db_name}}?sslmode=require" \
+                   -v mlflow_stage="{{inputs.parameters.mlflow_stage}}" \
+                   -v git_repo="{{inputs.parameters.git_repo}}" \
+                   -v entry_point="{{inputs.parameters.mlflow_entry}}" \
+                   -v experiment_name="{{inputs.parameters.experiment_name}}" \
+                   -v environment_name="{{inputs.parameters.environment_name}}" \
+                   -v mlflow_host="{{inputs.parameters.mlflow_tracking_uri}}" \
+                   -v app_location="{{inputs.parameters.shared_path}}/mlapp";
