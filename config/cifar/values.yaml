@@ -22,7 +22,7 @@ training_db_schema: public
 training_image: kroniak/ssh-client
 
 inference_user: pgadmin
-inference_host: pginstance-inference.default.svc.cluster.local
+inference_host: 34.148.32.199
 inference_db_name: pginstance-inference
 mlflow_tracking_uri: http://mlflow.tanzumlai.com
 inference_shared_path: /usr/local
