@@ -12,7 +12,6 @@ AS $$
     logging.getLogger().addHandler(logging.StreamHandler())
     logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log"))
     try:
-        sys.path.append(f'{app_location}/_vendor')
         sys.path.append(f'{app_location}')
         if sys.modules.get('app.analytics.cifar_cnn'):
             del sys.modules['app.analytics.cifar_cnn']

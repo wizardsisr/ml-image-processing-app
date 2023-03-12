@@ -76,22 +76,6 @@ spec:
               parameters:
                 - name: mlflow_entry
                   value: "promote_model_to_staging"
-        - - name: deploy-inference-code
-            template: deploy-code
-            arguments:
-              parameters:
-                - name: user
-                  value: #@ data.values.inference_user
-                - name: host
-                  value: #@ data.values.inference_host
-                - name: shared_path
-                  value: #@ data.values.inference_shared_path
-                - name: pem_file
-                  value: "usr/local/creds/greenplum_pem_file"
-                - name: shell_script
-                  value: #@ data.values.inference_code_shell_script
-                - name: base_image
-                  value: #@ data.values.inference_image
         - - name: deploy-inference-db
             template: deploy-db
             arguments:
