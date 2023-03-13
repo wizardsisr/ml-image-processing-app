@@ -4,7 +4,7 @@ entry_points:
   upload_dataset:
     parameters:
         dataset-name: {default: "cifar10"}
-    command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn, mlflow_utils; import mlflow; mlflow_utils.start_new_root_run(); cifar_cnn.upload_dataset(\"{dataset-name}\")" >> /tmp/app.log 2>&1'
+    command: '$(which python3.9) -c "from app.analytics import cifar_cnn_greenplum, mlflow_utils; import mlflow; mlflow_utils.start_new_root_run(); cifar_cnn_greenplum.upload_dataset(\"{dataset-name}\")" >> /tmp/app.log 2>&1'
   train_model:
     parameters:
         dataset-name: {default: "cifar10"}
@@ -12,17 +12,17 @@ entry_points:
         model-flavor: {default: "tensorflow"}
         model-stage: {default: "None"}
         epochs: {type: float, default: 10}
-    command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset(\"{dataset-name}\"); data=hkl.load(dataset_path); cifar_cnn.train_model(\"{model-name}\", \"{model-flavor}\", \"{model-stage}\", data, epochs={epochs})" >> /tmp/app.log 2>&1'
+    command: '$(which python3.9) -c "from app.analytics import cifar_cnn_greenplum; import hickle as hkl; dataset_path=cifar_cnn_greenplum.download_dataset(\"{dataset-name}\"); data=hkl.load(dataset_path); cifar_cnn_greenplum.train_model(\"{model-name}\", \"{model-flavor}\", \"{model-stage}\", data, epochs={epochs})" >> /tmp/app.log 2>&1'
   evaluate_model:
     parameters:
         dataset-name: {default: "cifar10"}
         model-name: {default: "cifar_cnn_gpmain"}
         model-flavor: {default: "tensorflow"}
-    command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn; cifar_cnn.evaluate_model(\"{model-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
+    command: '$(which python3.9) -c "from app.analytics import cifar_cnn_greenplum; cifar_cnn_greenplum.evaluate_model(\"{model-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
   promote_model_to_staging:
     parameters:
         base_model-name: {default: "cifar_cnn"}
         candidate-model-name: {default: "cifar_cnn_gpmain"}
         dataset-name: {default: "cifar10"}
         model-flavor: {default: "tensorflow"}
-    command: '$(which python3.9) -c "from app.analytics import preloader; from app.analytics import cifar_cnn; cifar_cnn.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
+    command: '$(which python3.9) -c "from app.analytics import cifar_cnn_greenplum; cifar_cnn_greenplum.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")" >> /tmp/app.log 2>&1'
