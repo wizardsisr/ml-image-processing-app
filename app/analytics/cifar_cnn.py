@@ -1,3 +1,12 @@
+import logging
+
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler())
+logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
+
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +21,6 @@ from sklearn.dummy import DummyClassifier
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
-import logging
 import pathlib
 import mlflow
 from mlflow import MlflowClient
@@ -34,10 +42,6 @@ from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
 from evidently.test_suite import TestSuite
 from evidently.test_preset import MulticlassClassificationTestPreset
-
-logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
-warnings.filterwarnings('ignore')
 
 
 # ## Upload dataset
@@ -197,7 +201,8 @@ def evaluate_model(model_name, model_flavor):
 
 
 # ## Promote Model to Staging
-def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_dataset_name, model_flavor, use_prior_version_as_base=False):
+def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_dataset_name, model_flavor,
+                             use_prior_version_as_base=False):
     """
     Evaluates the performance of the currently trained candidate model compared to the base model.
     The model that performs better based on specific metrics is then promoted to Staging.
@@ -217,7 +222,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
         preexisting_base_model_found = base_model is not None
 
         if _can_use_dummy_model_as_base(preexisting_base_model_found, use_prior_version_as_base):
-            logging.info(f"No prior base model found with name {base_model_name}" if use_prior_version_as_base else "Will use dummy model.")
+            logging.info(
+                f"No prior base model found with name {base_model_name}" if use_prior_version_as_base else "Will use dummy model.")
             logging.info(f"Preparing dummy model...")
             size, num_classes = test_labels.shape[0], 10
             dummy_data = pd.DataFrame({'x': np.random.randint(0, num_classes, size),
