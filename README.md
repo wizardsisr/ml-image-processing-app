@@ -8,7 +8,7 @@ tanzu secret registry add registry-credentials --username ${DATA_E2E_REGISTRY_US
 kubectl apply -f config/tap-rbac.yaml -nargo
 ```
 
-* Set up Argo:
+* Set up Argo Workflows (if not already setup):
 ```
 source .env
 kubectl create ns argo
@@ -22,19 +22,6 @@ kubectl apply -f config/argo-workflow-rbac.yaml -nargo
 * Login to Argo - copy the token from here:
 ```
 kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath='{.items[0].metadata.name}') -- argo auth token
-```
-
-* Include the necessary buildpack dependencies:
-```
-export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
-imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:${TBS_VERSION} \
---to-repo index.docker.io/oawofolu/tbs-full-deps
-tanzu package repository add tbs-full-deps-repository   --url oawofolu/tbs-full-deps:${TBS_VERSION}   --namespace tap-install
-tanzu package installed delete full-tbs-deps -n tap-install
-tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v ${TBS_VERSION}  -n tap-install
-tanzu package installed get full-tbs-deps   -n tap-install
-envsubst < ../tap/resources/tap-values-tbsfull.in.yaml > ../tap/resources/tap-values-tbsfull.yaml
-tanzu package installed update tap --values-file ../tap/resources/tap-values-tbsfull.yaml -n tap-install
 ```
 
 ### Deploy the Analytics App
