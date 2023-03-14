@@ -37,7 +37,7 @@ AS $$
         from base_app import main
         return subprocess.check_output('ls -ltr /', shell=True).decode(sys.stdout.encoding).strip()
     except subprocess.CalledProcessError as e:
-        return e.output
+        plpy.error(e.output)
 $$
 LANGUAGE 'plpython3u';
 

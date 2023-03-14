@@ -23,7 +23,7 @@ AS $$
         from app.analytics import cifar_cnn, config
         return cifar_cnn.predict(None, model_name, model_stage)
     except subprocess.CalledProcessError as e:
-        return e.output
+        plpy.error(e.output)
 $$
 LANGUAGE 'plpython3u';
 
