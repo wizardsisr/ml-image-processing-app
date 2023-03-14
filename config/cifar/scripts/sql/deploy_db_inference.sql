@@ -1,7 +1,12 @@
 --liquibase formatted sql
 --changeset pgadmin:XYZCHANGESETID
 CREATE EXTENSION plpython3u;
-CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (model_name text, model_stage text, app_location text, git_repo text, git_branch text)
+CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (model_name text,
+    model_stage text,
+    app_location text,
+    mlflow_tracking_uri text,
+    git_repo text,
+    git_branch text)
 RETURNS TEXT
 AS $$
     # container: plc_python3_shared
