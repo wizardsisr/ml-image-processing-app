@@ -47,10 +47,10 @@ tanzu apps workload delete image-processor-gp-main-api --yes
 
 ### Set up the Training DB
 
-* Set up Greenplum on AWS: 
+* Set up Greenplum on AWS: <a href="https://aws.amazon.com/blogs/apn/vmware-greenplum-on-aws-parallel-postgres-for-enterprise-analytics-at-scale/" target="_blank">link</a>
 
 ### Set up the Inference DB
-* NOTE: If deploying on GKE, first follow the pre-requisites for deploying VMware Postgres on Kubernetes: <a href="">link</a>
+* NOTE: If deploying the Postgres instance on GKE, first follow the pre-requisites for deploying VMware Postgres on Kubernetes: <a href="https://docs.vmware.com/en/VMware-SQL-with-Postgres-for-Kubernetes/1.5/vmware-postgres-k8s/GUID-prepare-gke.html" target="_blank">link</a>
 * Next, deploy the Postgres instance:
 ```
 source .env
