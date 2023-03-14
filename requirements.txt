@@ -40,7 +40,7 @@ hickle
 python-multipart
 evidently
 pysqlite3-binary
-kfp
+kfp==1.8.19
 https://github.com/agapebondservant/ml-image-processing-app/zipball/main
 pyservicebinding
 greenplum-python
