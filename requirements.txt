@@ -42,3 +42,5 @@ evidently
 pysqlite3-binary
 kfp
 https://github.com/agapebondservant/ml-image-processing-app/zipball/main
+pyservicebinding
+greenplum-python
