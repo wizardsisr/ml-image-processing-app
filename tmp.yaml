@@ -1,0 +1,27 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSMachineTemplate
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"infrastructure.cluster.x-k8s.io/v1beta1","kind":"AWSMachineTemplate","metadata":{"annotations":{},"name":"demo-ml-cluster-md-0","namespace":"default"},"spec":{"template":{"spec":{"ami":{"id":"ami-03714b1bf6617a560"},"iamInstanceProfile":"nodes.tkg.cloud.vmware.com","instanceType":"t3.xlarge","rootVolume":{"size":80},"sshKeyName":"default"}}}}
+  creationTimestamp: "2023-02-04T10:28:54Z"
+  generation: 1
+  name: demo-ml-cluster-updated-md-0
+  namespace: default
+  ownerReferences:
+  - apiVersion: cluster.x-k8s.io/v1beta1
+    kind: Cluster
+    name: demo-ml-cluster
+    uid: 07459a17-4f38-414c-ab04-bb51108f9395
+  resourceVersion: "6925"
+  uid: 8fdeede3-47f4-4de0-9e0e-1faff527df26
+spec:
+  template:
+    spec:
+      ami:
+        id: ami-03714b1bf6617a560
+      iamInstanceProfile: nodes.tkg.cloud.vmware.com
+      instanceType: t3.xlarge
+      rootVolume:
+        size: 160
+      sshKeyName: default

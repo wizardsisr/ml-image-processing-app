@@ -8,19 +8,6 @@ tanzu secret registry add tap-registry --username ${DATA_E2E_REGISTRY_USERNAME} 
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"},{"name": "tap-registry"}],"secrets":[{"name": "tap-registry"}]}'
 ```
 
-* Include the necessary buildpack dependencies:
-```
-export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
-imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:${TBS_VERSION} \
---to-repo index.docker.io/oawofolu/tbs-full-deps
-tanzu package repository add tbs-full-deps-repository   --url oawofolu/tbs-full-deps:${TBS_VERSION}   --namespace tap-install
-tanzu package installed delete full-tbs-deps -n tap-install
-tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v ${TBS_VERSION}  -n tap-install
-tanzu package installed get full-tbs-deps   -n tap-install
-envsubst < ../tap/resources/tap-values-tbsfull.in.yaml > ../tap/resources/tap-values-tbsfull.yaml
-tanzu package installed update tap --values-file ../tap/resources/tap-values-tbsfull.yaml -n tap-install
-```
-
 ### Deploy the Analytics App
 
 * Deploy the app:
@@ -59,14 +46,20 @@ tanzu apps workload delete image-processor-gp-main-api --yes
 ```
 
 ### Set up the Training DB
-* Deploy the Postgres training instance:
-```
-kubectl apply -f config/db/postgres/postgres-training-cluster.yaml
-```
+
+* Set up Greenplum on AWS: 
 
 ### Set up the Inference DB
+* NOTE: If deploying on GKE, first follow the pre-requisites for deploying VMware Postgres on Kubernetes: <a href="">link</a>
+* Next, deploy the Postgres instance:
 ```
-kubectl apply -f config/db/postgres/postgres-inference-cluster.yaml
+source .env
+kubectl apply -f config/db/postgres/postgres-inference-cluster.yaml -n ${DATA_E2E_POSTGRES_INFERENCE_CLUSTER_NAMESPACE}
+```
+
+* Export the Postgres Inference DB secret:
+```
+export PGINFERENCE_DB_SECRET=$(kubectl get secret pginstance-inference-db-secret -n ${DATA_E2E_POSTGRES_INFERENCE_CLUSTER_NAMESPACE} -o jsonpath="{.data.password}" | base64 --decode)
 ```
 
 ### Deploy the Training Pipeline
@@ -76,7 +69,7 @@ source .env
 chmod 600 $DATA_E2E_GREENPLUM_PEM
 kubectl cp $DATA_E2E_GREENPLUM_PEM vault/vault-0:/tmp
 kubectl exec vault-0 -n vault -- vault kv put secret/greenplum/default/training pem=@/tmp/$DATA_E2E_GREENPLUM_PEM password=$DATA_E2E_GREENPLUM_PASSWORD
-kubectl exec vault-0 -n vault -- vault kv put secret/postgres/default/inference password=$(kubectl get secret pginstance-inference-db-secret -n ${DATA_E2E_POSTGRES_INFERENCE_CLUSTER_NAMESPACE} -o jsonpath="{.data.password}" | base64 --decode)
+kubectl exec vault-0 -n vault -- vault kv put secret/postgres/default/inference password=$PGINFERENCE_DB_SECRET
 ```
 
 * Create ExternalSecrets which will be synced with the pipeline:
