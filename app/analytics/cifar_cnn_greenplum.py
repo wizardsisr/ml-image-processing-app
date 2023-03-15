@@ -48,6 +48,8 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
 # ## Make Prediction
 def predict(img, model_name, model_stage, schema='public'):
+    global sb
+
     # Resize / normalize the image
     img = img.resize((32, 32))
     img = img_to_array(img)
@@ -57,10 +59,10 @@ def predict(img, model_name, model_stage, schema='public'):
 
     # Get a handle for the Greenplum inference function
     inference_function = greenplumpython.function('run_inference_task', schema=schema)
-    bindings = _get_bindings("greenplum", "vmware")
-    url = f"postgresql://{bindings.get('username')}:{bindings.get('password')}@{bindings.get('host')}:{bindings.get('port')}/{bindings.get('database')}?sslmode=require"
-    logging.info(f"JDBC URL: {url}")
-    db = greenplumpython.database(uri=url)
+    bindings = next(iter(sb.get_bindings("greenplum", "vmware") or []), {})
+    db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:{bindings.get('password')}"
+                                      f"@{bindings.get('host')}:{bindings.get('port')}"
+                                      f"/{bindings.get('database')}?sslmode=require")
 
     # Invoke Greenplum function
     # TODO: Retrieve arguments from config
@@ -69,10 +71,4 @@ def predict(img, model_name, model_stage, schema='public'):
                                                  'gp-main'))
     logging.info(f"Result = {result}")
     return result
-
-
-def _get_bindings(service_type, service_provider):
-    global sb
-    bindings_list = sb.bindings(service_type, service_provider)
-    return bindings_list[0] if len(bindings_list) else {}
 
