@@ -1,7 +1,8 @@
 --liquibase formatted sql
 --changeset pgadmin:XYZCHANGESETID
 CREATE EXTENSION IF NOT EXISTS plpython3u;
-CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (model_name text,
+CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (img bytea,
+    model_name text,
     model_stage text,
     app_location text,
     mlflow_tracking_uri text,
@@ -21,7 +22,7 @@ AS $$
         sys.modules.pop('app.analytics.cifar_cnn') if sys.modules.get('app.analytics.cifar_cnn') else True
         sys.modules.pop('app.analytics.config') if sys.modules.get('app.analytics.config') else True
         from app.analytics import cifar_cnn, config
-        return cifar_cnn.predict(None, model_name, model_stage)
+        return cifar_cnn.predict(pickle.loads(img), model_name, model_stage)
     except subprocess.CalledProcessError as e:
         plpy.error(e.output)
 $$
