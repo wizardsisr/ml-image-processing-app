@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, Request
 from fastapi.openapi.utils import get_openapi
+from fastapi.middleware.cors import CORSMiddleware
 from app.analytics import cifar_cnn, config
 import logging
 from PIL import Image
@@ -7,6 +8,15 @@ import io
 import json
 
 api_app = FastAPI()
+
+# Enable CORS
+api_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @api_app.post('/inference')
