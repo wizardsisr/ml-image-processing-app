@@ -1,3 +1,15 @@
+## Before you begin:
+* Set up a **pre-commit** Git hook which will take care of autogenerating OpenAPI docs:
+```
+tee -a .git/hooks/pre-commit <<FILE
+echo "Generate OpenAPI schema docs................"
+$(which python3) -c "from app.analytics import api; api.generate_schema()"
+echo "OpenAPI schema docs generated."
+echo "Adding OpenAPI schema to repo..."
+git add app/analytics/static/api-docs/openapi.json
+FILE
+```
+
 ## Deployment
 
 * Set up secrets:
