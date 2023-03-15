@@ -41,4 +41,5 @@ python-multipart
 evidently
 pysqlite3-binary
 kfp
+python-multipart
 .
