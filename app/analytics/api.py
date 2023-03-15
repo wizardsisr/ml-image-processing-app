@@ -19,7 +19,7 @@ async def predict(request: Request, application: str, file: UploadFile) -> str:
 
 
 def generate_schema():
-    with open('v3/api-docs/openapi.json', 'w') as f:
+    with open('app/analytics/static/api-docs/openapi.json', 'w') as f:
         json.dump(get_openapi(
             title=api_app.title,
             version=api_app.version,
