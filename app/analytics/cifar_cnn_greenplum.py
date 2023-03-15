@@ -53,11 +53,11 @@ def predict(img, model_name, model_stage, schema='public'):
     global sb
 
     # Resize / normalize the image
-    img = img.resize((32, 32))
-    img = img_to_array(img)
-    img = img.reshape(-1, 32, 32, 3)
-    img = img.astype('float32')
-    img = img / 255.0
+    # img = img.resize((32, 32))
+    # img = img_to_array(img)
+    # img = img.reshape(-1, 32, 32, 3)
+    # img = img.astype('float32')
+    # img = img / 255.0
     img = pickle.dumps(img)
 
     # Get a handle for the Greenplum inference function
