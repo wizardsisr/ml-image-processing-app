@@ -16,7 +16,7 @@ spec:
       value:
         type: openapi
         location:
-          path: "/app/static"
+          path: "app/analytics/static"
         description: "A set of API endpoints for the ML Image Processing Demo App."
   env:
     - name: MLFLOW_TRACKING_URI

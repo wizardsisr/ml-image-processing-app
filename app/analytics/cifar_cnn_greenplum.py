@@ -11,6 +11,8 @@ import greenplumpython
 from pyservicebinding import binding
 sb = binding.ServiceBinding()
 
+import pickle
+
 
 # ## Upload dataset
 
@@ -56,6 +58,7 @@ def predict(img, model_name, model_stage, schema='public'):
     img = img.reshape(-1, 32, 32, 3)
     img = img.astype('float32')
     img = img / 255.0
+    img = pickle.dumps(img)
 
     # Get a handle for the Greenplum inference function
     inference_function = greenplumpython.function('run_inference_task', schema=schema)
