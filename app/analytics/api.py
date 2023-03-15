@@ -20,7 +20,7 @@ api_app.add_middleware(
 
 
 @api_app.post('/inference')
-async def predict(request: Request, application: str, file: UploadFile) -> str:
+async def predict(request: Request, file: UploadFile) -> str:
     logging.info("In inference...")
     model_name, model_stage = config.model_name, config.model_stage
     request_object_content = await file.read()
