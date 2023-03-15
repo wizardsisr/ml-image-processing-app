@@ -42,9 +42,7 @@ kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath=
 ```
 source .env
 envsubst < config/workload.in.yaml > config/workload.yaml
-envsubst < config/workload-api.in.yaml > config/workload-api.yaml
 tanzu apps workload create image-processor -f config/workload.yaml --yes
-tanzu apps workload create image-processor-api -f config/workload-api.yaml --yes
 ```
 
 * Tail the logs of the main app:
@@ -52,25 +50,14 @@ tanzu apps workload create image-processor-api -f config/workload-api.yaml --yes
 tanzu apps workload tail image-processor --since 64h
 ```
 
-* Tail the logs of the API app:
-```
-tanzu apps workload tail image-processor-api --since 64h
-```
-
 * Once deployment succeeds, get the URL for the main app:
 ```
 tanzu apps workload get image-processor #should yield image-processor.default.<your-domain>
 ```
 
-* Get the URL for the API app:
-```
-tanzu apps workload get image-processor-api #should yield image-processor.default.<your-domain>
-```
-
 * To delete the app:
 ```
 tanzu apps workload delete image-processor --yes
-tanzu apps workload delete image-processor-api --yes
 ```
 
 ### Deploy the Training Pipeline
