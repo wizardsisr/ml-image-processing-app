@@ -26,9 +26,7 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registr
 ```
 source .env
 envsubst < config/workload.in.yaml > config/workload.yaml
-envsubst < config/workload-api.in.yaml > config/workload-api.yaml
 tanzu apps workload create image-processor-gp-main -f config/workload.yaml --yes
-tanzu apps workload create image-processor-gp-main-api -f config/workload-api.yaml --yes
 ```
 
 * Tail the logs of the main app:
@@ -36,25 +34,14 @@ tanzu apps workload create image-processor-gp-main-api -f config/workload-api.ya
 tanzu apps workload tail image-processor-gp-main --since 64h
 ```
 
-* Tail the logs of the API app:
-```
-tanzu apps workload tail image-processor-gp-main-api --since 64h
-```
-
 * Once deployment succeeds, get the URL for the main app:
 ```
 tanzu apps workload get image-processor-gp-main #should yield image-processor-gp-main.default.<your-domain>
 ```
 
-* Get the URL for the API app:
-```
-tanzu apps workload get image-processor-api #should yield image-processor-gp-main-api.default.<your-domain>
-```
-
 * To delete the app:
 ```
 tanzu apps workload delete image-processor-gp-main --yes
-tanzu apps workload delete image-processor-gp-main-api --yes
 ```
 
 ### Set up the Training DB
