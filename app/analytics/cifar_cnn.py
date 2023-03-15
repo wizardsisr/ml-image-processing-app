@@ -135,7 +135,7 @@ def train_model(model_name, model_flavor, model_stage, data, epochs=10):
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)
         client = MlflowClient()
         # Build and Compile Model
-        with tensorflow.device('/CPU:0'):  # Place tensors on CPU devices
+        with tensorflow.device('/CPU:0'):  # Place tensors on the CPU
             model = models.Sequential()
             model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
             model.add(layers.MaxPooling2D((2, 2)))

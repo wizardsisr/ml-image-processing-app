@@ -41,6 +41,7 @@ python-multipart
 evidently
 pysqlite3-binary
 kfp==1.8.19
-https://github.com/agapebondservant/ml-image-processing-app/zipball/main
+python-multipart
 pyservicebinding
 greenplum-python
+https://github.com/agapebondservant/ml-image-processing-app/zipball/gp-main

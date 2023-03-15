@@ -3,4 +3,8 @@ Dockerfileconfig/argo-workflow-http-proxy.yaml
 config/workload-api.yaml
 config/workload.yaml
 gpdemo.pem
-tls.*
+tls.crt tls.key
+tls.crt
+tls.key
+app/__pycache__/
+app/analytics/__pycache__/
