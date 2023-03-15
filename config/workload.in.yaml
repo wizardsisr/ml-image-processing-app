@@ -5,22 +5,30 @@ metadata:
   name: image-processor-gpmain
   labels:
     apps.tanzu.vmware.com/workload-type: web
-    app.kubernetes.io/part-of: image-processor-gpmain
-    apis.apps.tanzu.vmware.com/register-api: "true"
+    app.kubernetes.io/part-of: image-processor
+    #apis.apps.tanzu.vmware.com/register-api: "true"
 spec:
   #image: index.docker.io/oawofolu/image-processor-default@sha256:ba3df083e2abf17117488d918ba2321ec7ba9999981077416725cb3f34b09c6e
   params:
     - name: clusterBuilder
       value: full
-    - name: api_descriptor
-      value:
-        type: openapi
-        location:
-          path: "/app/static/api-docs"
-        description: "A set of API endpoints for the ML Image Processing Demo App."
+    #- name: api_descriptor
+    #  value:
+    #    type: openapi
+    #    location:
+    #      path: "/app/static/api-docs"
+    #    description: "A set of API endpoints for the ML Image Processing Demo App."
   env:
     - name: MLFLOW_TRACKING_URI
       value: http://mlflow.${DATA_E2E_BASE_URL}
+    - name: STREAMLIT_SERVER_ENABLE_STATIC_SERVING
+      value: true
+  serviceClaims:
+    - name: db
+      ref:
+        apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+        kind: ResourceClaim
+        name: greenplum-db-claim
   source:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git
