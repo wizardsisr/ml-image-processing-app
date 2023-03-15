@@ -58,9 +58,9 @@ def predict(img, model_name, model_stage, schema='public'):
     # Get a handle for the Greenplum inference function
     inference_function = greenplumpython.function('run_inference_task', schema=schema)
     bindings = _get_bindings("greenplum", "vmware")
-    db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:"
-                                      f"{bindings.get('password')}@{bindings.get('host')}:"
-                                      f"{bindings.get('port')}/{bindings.get('database')}?sslmode=require")
+    url = f"postgresql://{bindings.get('username')}:{bindings.get('password')}@{bindings.get('host')}:{bindings.get('port')}/{bindings.get('database')}?sslmode=require"
+    logging.info(f"JDBC URL: {url}")
+    db = greenplumpython.database(uri=url)
 
     # Invoke Greenplum function
     # TODO: Retrieve arguments from config
