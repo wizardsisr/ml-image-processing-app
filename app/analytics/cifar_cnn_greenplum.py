@@ -8,6 +8,8 @@ logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
 from app.analytics import preloader, cifar_cnn
 from tensorflow.keras.preprocessing.image import img_to_array
 import greenplumpython
+from pyservicebinding import binding
+sb = binding.ServiceBinding()
 
 
 # ## Upload dataset
@@ -55,12 +57,22 @@ def predict(img, model_name, model_stage, schema='public'):
 
     # Get a handle for the Greenplum inference function
     inference_function = greenplumpython.function('run_inference_task', schema=schema)
-    # TODO: Use ServiceBindings instead of hardcoded URL
-    db = greenplumpython.database(uri="postgresql://gpadmin:fsfdBxVHk6U2V@54.157.211.183:5432/dev?sslmode=require")
+    bindings = _get_bindings("greenplum", "vmware")
+    db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:"
+                                      f"{bindings.get('password')}@{bindings.get('host')}:"
+                                      f"{bindings.get('port')}/{bindings.get('database')}?sslmode=require")
 
     # Invoke Greenplum function
+    # TODO: Retrieve arguments from config
     result = db.apply(lambda: inference_function(img, model_name, model_stage, 'mlapp', 'http://mlflow.tanzumlai.com',
                                                  'https://github.com/agapebondservant/ml-image-processing-app.git',
                                                  'gp-main'))
     logging.info(f"Result = {result}")
     return result
+
+
+def _get_bindings(service_type, service_provider):
+    global sb
+    bindings_list = sb.bindings(service_type, service_provider)
+    return bindings_list[0] if len(bindings_list) else {}
+
