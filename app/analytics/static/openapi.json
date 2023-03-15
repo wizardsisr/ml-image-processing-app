@@ -9,17 +9,6 @@
             "post": {
                 "summary": "Predict",
                 "operationId": "predict_inference_post",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Application",
-                            "type": "string"
-                        },
-                        "name": "application",
-                        "in": "query"
-                    }
-                ],
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
