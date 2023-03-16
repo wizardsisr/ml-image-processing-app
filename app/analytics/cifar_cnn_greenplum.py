@@ -65,6 +65,6 @@ def predict(img, model_name, model_stage, schema='public'):
     result = db.apply(lambda: inference_function(img, model_name, model_stage, 'mlapp', 'http://mlflow.tanzumlai.com',
                                                  'https://github.com/agapebondservant/ml-image-processing-app.git',
                                                  'gp-main'))
-    logging.info(f"Result = {result}...{type(result)}, {result[0]}, {result[0][0]}")
+    logging.info(f"Result = {result}")
     return result
 
