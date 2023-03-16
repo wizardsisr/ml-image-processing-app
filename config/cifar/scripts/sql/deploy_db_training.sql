@@ -16,7 +16,7 @@ AS $$
     import subprocess
     import logging
     logging.getLogger().addHandler(logging.StreamHandler())
-    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log"))
+    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log", maxBytes=8192))
     import importlib
     import pkgutil
     try:
@@ -34,6 +34,7 @@ AS $$
             del sys.modules['base_app.main']
         if sys.modules.get('base_app'):
             del sys.modules['base_app']
+
         from base_app import main
         return subprocess.check_output('ls -ltr /', shell=True).decode(sys.stdout.encoding).strip()
     except subprocess.CalledProcessError as e:
