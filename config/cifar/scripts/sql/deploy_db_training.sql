@@ -16,7 +16,7 @@ AS $$
     import subprocess
     import logging
     logging.getLogger().addHandler(logging.StreamHandler())
-    logging.getLogger().addHandler(logging.FileHandler(f"{app_location}/debug.log", maxBytes=8192))
+    logging.getLogger().addHandler(logging.handlers.RotatingFileHandler(f"{app_location}/debug.log", maxBytes=8192))
     import importlib
     import pkgutil
     try:

@@ -2,7 +2,7 @@ import logging
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
-logging.getLogger().addHandler(logging.RotatingFileHandler(f"app.log", maxBytes=8192))
+logging.getLogger().addHandler(logging.handlers.RotatingFileHandler(f"app.log", maxBytes=8192))
 
 from app.analytics import preloader, cifar_cnn, config
 import greenplumpython
