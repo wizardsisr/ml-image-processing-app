@@ -68,5 +68,5 @@ def predict(img, model_name, model_stage, schema='public'):
                                              'https://github.com/agapebondservant/ml-image-processing-app.git',
                                              'gp-main'))
     result = next(iter(df))[function_name]
-    logging.info(f"Result = {df}, {result}")
+    logging.info(f"Result = {result}")
     return result
