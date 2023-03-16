@@ -18,7 +18,7 @@ import pickle
 
 # Upload dataset to S3 via MlFlow
 def upload_dataset(dataset, dataset_url=None):
-    return cifar_cnn.upload_dataset(dataset, dataset_url)
+    return cifar_cnn.upload_dataset(dataset, dataset_url, to_parquet=True)
 
 
 # ## Download DataSet
