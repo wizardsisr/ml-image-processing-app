@@ -56,7 +56,8 @@ with tab1:
         with col2:
             prediction = cifar_cnn_greenplum.predict(cifar_img, config.model_name, config.model_stage)
             if prediction:
-                st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
+                pred = next(iter(prediction))['run_inference_task']
+                st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{pred}</span>",
                             unsafe_allow_html=True)
                 metrics = cifar_cnn.get_metrics()
                 logging.info(f"Metrics = {metrics}")
