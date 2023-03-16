@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION XYZDBSCHEMA.run_inference_task (img bytea,
 RETURNS TEXT
 AS $$
     # container: plc_python3_shared
-    import os, sys, subprocess, logging
+    import os, sys, subprocess, logging, pickle
     try:
         dir = f"{os.path.expanduser('~')}/{app_location}"
         os.environ['MLFLOW_TRACKING_URI'] = mlflow_tracking_uri
