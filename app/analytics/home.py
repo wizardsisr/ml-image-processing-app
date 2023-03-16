@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 from app.analytics import config, cifar_cnn, cifar_cnn_greenplum
 from streamlit_autorefresh import st_autorefresh
+import logging
 
 # Initializations
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -58,6 +59,7 @@ with tab1:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
                 metrics = cifar_cnn.get_metrics()
+                logging.info(f"Metrics = {metrics}")
                 st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metrics.get('f1_score') or 'None available'}</span>",
                             unsafe_allow_html=True)
                 st.markdown(f"<br/>Accuracy metric:<br/> <span class='metriclabel'>{metrics.get('accuracy_score') or 'None available'}</span>",
