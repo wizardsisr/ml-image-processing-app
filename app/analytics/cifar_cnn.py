@@ -42,7 +42,6 @@ from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
 from evidently.test_suite import TestSuite
 from evidently.test_preset import MulticlassClassificationTestPreset
-import pyarrow as pa
 
 
 # ## Upload dataset
@@ -74,14 +73,6 @@ def upload_dataset(dataset, dataset_url=None, to_parquet=False):
         try:
             client.log_artifact(artifact_run_id, dataset)
             logging.info(f'File uploaded - run id {artifact_run_id}')
-            if to_parquet:
-                pa_table = pa.table({'training_data': training_data,
-                                     'test_data': test_data,
-                                     'training_labels': training_labels,
-                                     'test_labels': test_labels})
-                pa.parquet.write_table(pa_table, f"{dataset}.parquet")
-                client.log_artifact(artifact_run_id, f"{dataset}.parquet")
-                logging.info(f'Parquet file uploaded - run id {artifact_run_id}')
         except Exception as e:
             logging.error(f'Could not complete upload for run id {artifact_run_id} - error occurred: ', exc_info=True)
             traceback.print_exc()
