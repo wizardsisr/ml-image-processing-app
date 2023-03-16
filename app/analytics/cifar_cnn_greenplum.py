@@ -9,10 +9,13 @@ from app.analytics import preloader, cifar_cnn
 from tensorflow.keras.preprocessing.image import img_to_array
 import greenplumpython
 from pyservicebinding import binding
+import pickle
 
 sb = binding.ServiceBinding()
-
-import pickle
+inference_function_name = 'run_inference_task'
+inference_function = greenplumpython.function(inference_function_name, schema='public')
+bindings = next(iter(sb.bindings("postgres", "vmware") or []), {})
+db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:{bindings.get('password')}@{bindings.get('host')}:{bindings.get('port')}/{bindings.get('database')}?sslmode=require")
 
 
 # ## Upload dataset
@@ -51,22 +54,14 @@ def promote_model_to_staging(base_model_name, candidate_model_name, evaluation_d
 
 # ## Make Prediction
 def predict(img, model_name, model_stage, schema='public'):
-    global sb
+    # global db, sb, inference_function_name, inference_function
     img = pickle.dumps(img)
-
-    # Get a handle for the Greenplum inference function
-    function_name = 'run_inference_task'
-    inference_function = greenplumpython.function(function_name, schema=schema)
-    bindings = next(iter(sb.bindings("postgres", "vmware") or []), {})
-    db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:{bindings.get('password')}"
-                                      f"@{bindings.get('host')}:{bindings.get('port')}"
-                                      f"/{bindings.get('database')}?sslmode=require")
 
     # Invoke Greenplum function
     # TODO: Retrieve arguments from config
     df = db.apply(lambda: inference_function(img, model_name, model_stage, 'mlapp', 'http://mlflow.tanzumlai.com',
                                              'https://github.com/agapebondservant/ml-image-processing-app.git',
                                              'gp-main'))
-    result = next(iter(df))[function_name]
+    result = next(iter(df))[inference_function_name]
     logging.info(f"Result = {result}")
     return result
