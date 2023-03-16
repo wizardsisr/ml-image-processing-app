@@ -9,6 +9,7 @@ from app.analytics import preloader, cifar_cnn
 from tensorflow.keras.preprocessing.image import img_to_array
 import greenplumpython
 from pyservicebinding import binding
+
 sb = binding.ServiceBinding()
 
 import pickle
@@ -54,7 +55,8 @@ def predict(img, model_name, model_stage, schema='public'):
     img = pickle.dumps(img)
 
     # Get a handle for the Greenplum inference function
-    inference_function = greenplumpython.function('run_inference_task', schema=schema)
+    function_name = 'run_inference_task'
+    inference_function = greenplumpython.function(function_name, schema=schema)
     bindings = next(iter(sb.bindings("postgres", "vmware") or []), {})
     db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:{bindings.get('password')}"
                                       f"@{bindings.get('host')}:{bindings.get('port')}"
@@ -62,9 +64,9 @@ def predict(img, model_name, model_stage, schema='public'):
 
     # Invoke Greenplum function
     # TODO: Retrieve arguments from config
-    result = db.apply(lambda: inference_function(img, model_name, model_stage, 'mlapp', 'http://mlflow.tanzumlai.com',
-                                                 'https://github.com/agapebondservant/ml-image-processing-app.git',
-                                                 'gp-main'))
-    logging.info(f"Result = {result}, {next(iter(result))}")
+    df = db.apply(lambda: inference_function(img, model_name, model_stage, 'mlapp', 'http://mlflow.tanzumlai.com',
+                                             'https://github.com/agapebondservant/ml-image-processing-app.git',
+                                             'gp-main'))
+    result = next(iter(df))[function_name]
+    logging.info(f"Result = {df}, {result}")
     return result
-
