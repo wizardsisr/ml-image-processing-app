@@ -46,7 +46,7 @@ def prep_mlflow_run(active_run):
 
 def get_experiment_metrics():
     model_uri = f"models:/{config.model_name}/{config.model_stage}"
-    model_info = mlflow.models.get_model_info(model_uri).metadata
+    model_info = mlflow.models.get_model_info(model_uri)
     if model_info is None:
         return {}
     else:
