@@ -40,7 +40,7 @@ hickle
 python-multipart
 evidently
 pysqlite3-binary
-kfp
+kfp==1.8.19
 python-multipart
 pyservicebinding
 .

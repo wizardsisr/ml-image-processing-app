@@ -8,3 +8,5 @@ tls.crt
 tls.key
 app/__pycache__/
 app/analytics/__pycache__/
+cifar10
+cifar10.parquet
