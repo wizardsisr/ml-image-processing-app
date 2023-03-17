@@ -3,7 +3,7 @@ import logging
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
-logging.getLogger().addHandler(logging.handlers.RotatingFileHandler(f"app.log", maxBytes=8192))
+logging.getLogger().addHandler(logging.FileHandler(f"app.log"))
 
 import warnings
 warnings.filterwarnings('ignore')

@@ -17,7 +17,7 @@ AS $$
 
         dir = f"{os.path.expanduser('~')}/{app_location}"
         logging.getLogger().addHandler(logging.StreamHandler())
-        logging.getLogger().addHandler(logging.handlers.RotatingFileHandler(f"{dir}/debug.log", maxBytes=8192))
+        logging.getLogger().addHandler(logging.FileHandler(f"{dir}/debug.log"))
         if not os.path.exists(dir):
         	os.system(f'git clone -v --branch={git_branch} "{git_repo}" --single-branch {dir}')
         sys.path.append(f'{dir}') if dir not in sys.path else True
