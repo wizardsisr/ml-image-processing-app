@@ -55,8 +55,3 @@ def get_experiment_metrics():
         runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
                                   output_format='list', order_by=["metrics.accuracy_score DESC"])
         return runs[0].data.metrics if len(runs) else {}
-
-    # experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
-    # runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
-    #                           output_format='list', order_by=["metrics.accuracy_score DESC"])
-    # return runs[0].data.metrics if len(runs) else {}
