@@ -47,7 +47,7 @@ from evidently.test_preset import MulticlassClassificationTestPreset
 # ## Upload dataset
 
 # Upload dataset to S3 via MlFlow
-def upload_dataset(dataset, dataset_url=None):
+def upload_dataset(dataset, dataset_url=None, to_parquet=False):
     with mlflow.start_run(run_name='upload_dataset', nested=True) as active_run:
         mlflow_utils.prep_mlflow_run(active_run)
         artifact_run_id = mlflow_utils.get_root_run(active_run.info.run_id)

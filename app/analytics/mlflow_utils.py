@@ -1,6 +1,7 @@
 import mlflow
 import os
 from mlflow import MlflowClient
+from app.analytics import config
 
 
 # ## Utilities
@@ -44,7 +45,13 @@ def prep_mlflow_run(active_run):
 
 
 def get_experiment_metrics():
-    experiment_name = os.environ.get('MLFLOW_EXPERIMENT_NAME') or 'Default'
-    runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
-                              output_format='list')
-    return runs[0].data.metrics if len(runs) else {}
+    model_uri = f"models:/{config.model_name}/{config.model_stage}"
+    model_info = mlflow.models.get_model_info(model_uri)
+    if model_info is None:
+        return {}
+    else:
+        experiment_id = mlflow.get_run(model_info.run_id).info.experiment_id
+        experiment_name = mlflow.get_experiment(f"{experiment_id}").name
+        runs = mlflow.search_runs(experiment_names=[experiment_name], filter_string="tags.runlevel='root'", max_results=1,
+                                  output_format='list', order_by=["metrics.accuracy_score DESC"])
+        return runs[0].data.metrics if len(runs) else {}
