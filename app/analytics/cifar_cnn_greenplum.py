@@ -1,4 +1,5 @@
 import logging
+
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
@@ -11,15 +12,18 @@ import pickle
 import os
 
 # Service Bindings
-sb = binding.ServiceBinding()
-bindings = next(iter(sb.bindings("postgres", "vmware") or []), {})
-
-# GreenplumPython
-db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:"
-                                  f"{bindings.get('password')}@{bindings.get('host')}:"
-                                  f"{bindings.get('port')}/{bindings.get('database')}?sslmode=require")
-inference_function_name = 'run_inference_task'
-inference_function = greenplumpython.function(inference_function_name, schema=os.environ['DATA_E2E_MLAPP_INFERENCE_DB_SCHEMA'])
+try:
+    sb = binding.ServiceBinding()
+    bindings = next(iter(sb.bindings("postgres", "vmware") or []), {})
+    # GreenplumPython
+    db = greenplumpython.database(uri=f"postgresql://{bindings.get('username')}:"
+                                      f"{bindings.get('password')}@{bindings.get('host')}:"
+                                      f"{bindings.get('port')}/{bindings.get('database')}?sslmode=require")
+    inference_function_name = 'run_inference_task'
+    inference_function = greenplumpython.function(inference_function_name,
+                                                  schema=os.environ['DATA_E2E_MLAPP_INFERENCE_DB_SCHEMA'])
+except binding.ServiceBindingRootMissingError as msg:
+    logging.info("SERVICE_BINDING_ROOT env var not set")
 
 
 # ## Upload dataset
