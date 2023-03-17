@@ -55,7 +55,7 @@ with tab1:
             st.image(cifar_img, width=200)
         with col2:
             placeholder = st.empty()
-            placeholder.text("Loading model...")
+            placeholder.header("Loading model...")
             with placeholder.container():
                 prediction = cifar_cnn_greenplum.predict(cifar_img, config.model_name, config.model_stage)
                 if prediction:
