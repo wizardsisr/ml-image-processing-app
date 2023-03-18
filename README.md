@@ -15,8 +15,8 @@ FILE
 * Set up secrets:
 ```
 source .env
-tanzu secret registry add registry-credentials --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes -nargo
-kubectl apply -f config/tap-rbac.yaml -nargo
+tanzu secret registry add registry-credentials --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes -ndefault
+kubectl apply -f config/tap-rbac.yaml -ndefault
 ```
 
 * Set up Argo Workflows (if not already setup):
