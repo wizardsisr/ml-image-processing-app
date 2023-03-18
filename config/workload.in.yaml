@@ -32,18 +32,6 @@ spec:
       value: ${DATA_E2E_MLAPP_GIT_REPO_BRANCH}
     - name: DATA_E2E_MLAPP_INFERENCE_DB_SCHEMA
       value: ${DATA_E2E_MLAPP_INFERENCE_DB_SCHEMA}
-  serviceClaims:
-    - name: db
-      ref:
-        apiVersion: services.apps.tanzu.vmware.com/v1alpha1
-        kind: ResourceClaim
-        name: greenplum-db-claim
-    - name: db2
-      ref:
-        apiVersion: services.apps.tanzu.vmware.com/v1alpha1
-        kind: ResourceClaim
-        name: postgres-db-claim
-
   source:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git
