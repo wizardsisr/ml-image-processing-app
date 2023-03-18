@@ -1,37 +1,5 @@
 ## Before you begin:
-* Set up a **pre-commit** Git hook which will take care of autogenerating OpenAPI docs:
-```
-tee -a .git/hooks/pre-commit <<FILE
-echo "Generate OpenAPI schema docs................"
-$(which python3) -c "from app.analytics import api; api.generate_schema()"
-echo "OpenAPI schema docs generated."
-echo "Adding OpenAPI schema to repo..."
-git add app/analytics/static/api-docs/openapi.json
-FILE
-```
-
-## Deployment
-
-* Set up secrets:
-```
-source .env
-tanzu secret registry add regsecret --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes  
-tanzu secret registry add tap-registry --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes
-kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"},{"name": "tap-registry"}],"secrets":[{"name": "tap-registry"}]}'
-```
-
-* Include the necessary buildpack dependencies:
-```
-export TBS_VERSION=1.9.0 # based on $(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install)
-imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:${TBS_VERSION} \
---to-repo index.docker.io/oawofolu/tbs-full-deps
-tanzu package repository add tbs-full-deps-repository   --url oawofolu/tbs-full-deps:${TBS_VERSION}   --namespace tap-install
-tanzu package installed delete full-tbs-deps -n tap-install
-tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v ${TBS_VERSION}  -n tap-install
-tanzu package installed get full-tbs-deps   -n tap-install
-envsubst < ../tap/resources/tap-values-tbsfull.in.yaml > ../tap/resources/tap-values-tbsfull.yaml
-tanzu package installed update tap --values-file ../tap/resources/tap-values-tbsfull.yaml -n tap-install
-```
+* Ensure that all pre-requisites described in the **main** branch are satisfied (see README in **main** branch).
 
 ### Deploy the Analytics App
 
