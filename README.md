@@ -1,24 +1,5 @@
 ## Before you begin:
-* Set up a **pre-commit** Git hook which will take care of autogenerating OpenAPI docs:
-```
-tee -a .git/hooks/pre-commit <<FILE
-echo "Generate OpenAPI schema docs................"
-$(which python3) -c "from app.analytics import api; api.generate_schema()"
-echo "OpenAPI schema docs generated."
-echo "Adding OpenAPI schema to repo..."
-git add app/analytics/static/api-docs/openapi.json
-FILE
-```
-
-## Deployment
-
-* Set up secrets:
-```
-source .env
-tanzu secret registry add regsecret --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes  
-tanzu secret registry add tap-registry --username ${DATA_E2E_REGISTRY_USERNAME} --password ${DATA_E2E_REGISTRY_PASSWORD} --server https://index.docker.io/v1/ --export-to-all-namespaces --yes
-kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"},{"name": "tap-registry"}],"secrets":[{"name": "tap-registry"}]}'
-```
+* Ensure that all pre-requisites described in the **main** branch are satisfied (see README in **main** branch).
 
 ### Deploy the Analytics App
 
