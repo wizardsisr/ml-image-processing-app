@@ -1,4 +1,6 @@
-## Before you begin:
+# ML Image Processing App
+
+## Pre-requisites
 * Set up a **pre-commit** Git hook which will take care of autogenerating OpenAPI docs:
 ```
 tee -a .git/hooks/pre-commit <<FILE
@@ -9,8 +11,6 @@ echo "Adding OpenAPI schema to repo..."
 git add app/analytics/static/api-docs/openapi.json
 FILE
 ```
-
-## Deployment
 
 * Set up secrets:
 ```
@@ -35,7 +35,7 @@ kubectl apply -f config/argo-workflow-rbac.yaml -nargo
 kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath='{.items[0].metadata.name}') -- argo auth token
 ```
 
-### Deploy the Analytics App
+## Deploy the Analytics App
 
 * Deploy the app:
 ```
@@ -59,7 +59,7 @@ tanzu apps workload get image-processor #should yield image-processor.default.<y
 tanzu apps workload delete image-processor --yes
 ```
 
-### Deploy the Training Pipeline
+## Deploy the Training Pipeline
 * cd to </root/of/branch/directory/with/appropriate/model/stage> 
 (Example: the **main** github branch represents the "main" environment, the **staging** github branch represents the "staging" environment, etc)
 
