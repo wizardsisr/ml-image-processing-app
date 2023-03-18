@@ -41,6 +41,8 @@ kubectl -n argo exec $(kubectl get pod -n argo -l 'app=argo-server' -o jsonpath=
 ```
 source .env
 envsubst < config/workload.in.yaml > config/workload.yaml
+envsubst < config/workload-api.in.yaml > config/workload-api.yaml
+envsubst < config/workload-api-httpproxy.in.yaml > config/workload-api-httpproxy.yaml
 tanzu apps workload create image-processor -f config/workload.yaml --yes
 ```
 
