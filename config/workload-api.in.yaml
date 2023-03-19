@@ -2,7 +2,7 @@
 apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
-  name: image-processor-api
+  name: image-processor-api-kfp-main
   labels:
     apps.tanzu.vmware.com/workload-type: web
 spec:
@@ -17,4 +17,4 @@ spec:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git
       ref:
-        branch: main
+        branch: api-kfp-main
