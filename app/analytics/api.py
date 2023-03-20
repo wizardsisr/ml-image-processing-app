@@ -6,6 +6,7 @@ import logging
 from PIL import Image
 import io
 import json
+from starlette.staticfiles import StaticFiles
 
 api_app = FastAPI()
 
@@ -17,6 +18,8 @@ api_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+api_app.mount("/static", StaticFiles(directory="app/analytics/static", html=True), name="static")
 
 
 @api_app.post('/inference')
