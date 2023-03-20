@@ -3,11 +3,9 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from app.analytics import cifar_cnn, config
 import logging
-import streamlit
 from PIL import Image
 import io
 import json
-import os
 
 api_app = FastAPI()
 
@@ -19,11 +17,6 @@ api_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@api_app.get("/")
-async def root():
-    os.system("streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8000")
 
 
 @api_app.post('/inference')
