@@ -3,10 +3,11 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from app.analytics import cifar_cnn, config
 import logging
+import streamlit
 from PIL import Image
 import io
 import json
-from fastapi.responses import RedirectResponse
+import os
 
 api_app = FastAPI()
 
@@ -20,9 +21,9 @@ api_app.add_middleware(
 )
 
 
-@api_app.get("/", response_class=RedirectResponse, status_code=302)
+@api_app.get("/")
 async def root():
-    return "https://127.0.0.1:8000"
+    os.system("streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8000")
 
 
 @api_app.post('/inference')

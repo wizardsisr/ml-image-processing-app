@@ -10,8 +10,13 @@
                 "summary": "Root",
                 "operationId": "root__get",
                 "responses": {
-                    "302": {
-                        "description": "Successful Response"
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
                     }
                 }
             }
