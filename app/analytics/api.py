@@ -19,8 +19,6 @@ api_app.add_middleware(
     allow_headers=["*"],
 )
 
-api_app.mount("/static", StaticFiles(directory="app/analytics/static", html=True), name="static")
-
 
 @api_app.post('/inference')
 async def predict(file: UploadFile) -> str:
