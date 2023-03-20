@@ -1,1 +1,1 @@
-web:  streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8080
+web:  streamlit run app/analytics/home.py model_stage=Staging --logger.level=info --server.port 8080; uvicorn app.analytics.api:api_app --host 127.0.0.1 --port 8000

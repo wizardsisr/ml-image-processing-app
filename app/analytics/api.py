@@ -6,6 +6,7 @@ import logging
 from PIL import Image
 import io
 import json
+from fastapi.responses import RedirectResponse
 
 api_app = FastAPI()
 
@@ -17,6 +18,11 @@ api_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@api_app.get("/", response_class=RedirectResponse, status_code=302)
+async def root():
+    return "https://127.0.0.1:8000"
 
 
 @api_app.post('/inference')

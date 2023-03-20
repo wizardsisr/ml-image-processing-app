@@ -5,6 +5,17 @@
         "version": "0.1.0"
     },
     "paths": {
+        "/": {
+            "get": {
+                "summary": "Root",
+                "operationId": "root__get",
+                "responses": {
+                    "302": {
+                        "description": "Successful Response"
+                    }
+                }
+            }
+        },
         "/inference": {
             "post": {
                 "summary": "Predict",
