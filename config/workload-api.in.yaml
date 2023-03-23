@@ -12,15 +12,6 @@ spec:
   params:
     - name: clusterBuilder
       value: full
-    - name: api_descriptor
-      value:
-        type: openapi
-        location:
-          path: "/app/static/openapi.json"
-          baseUrl: "http://image-processor-api-gp-main.default.${DATA_E2E_BASE_URL}"
-        system: image-processors
-        owner: team-image-processors
-        description: "A set of API endpoints for the ML Image Processing Demo App."
   env:
     - name: MLFLOW_TRACKING_URI
       value: http://mlflow.${DATA_E2E_BASE_URL}
