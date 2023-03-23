@@ -6,7 +6,6 @@ import logging
 from PIL import Image
 import io
 import json
-import os
 
 api_app = FastAPI()
 
@@ -22,7 +21,7 @@ api_app.add_middleware(
 
 @api_app.post('/inference')
 async def predict(file: UploadFile) -> str:
-    logging.info(f"In inference...tracking URI = {os.environ.get('MLFLOW_TRACKING_URI')}")
+    logging.info("In inference...")
     model_name, model_stage = config.model_name, config.model_stage
     request_object_content = await file.read()
     img = Image.open(io.BytesIO(request_object_content))
