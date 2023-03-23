@@ -5,15 +5,13 @@ metadata:
   name: image-processor-api-gp-main
   labels:
     apps.tanzu.vmware.com/workload-type: web
-    apis.apps.tanzu.vmware.com/register-api: "true"
+  annotations:
+    autoscaling.knative.dev/minScale: "1"
 spec:
   #image: index.docker.io/oawofolu/image-processor-default@sha256:ba3df083e2abf17117488d918ba2321ec7ba9999981077416725cb3f34b09c6e
   params:
     - name: clusterBuilder
       value: full
-    - name: annotations
-      value:
-        autoscaling.knative.dev/minScale: "1"
     - name: api_descriptor
       value:
         type: openapi
