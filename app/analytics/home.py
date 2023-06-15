@@ -84,7 +84,7 @@ with tab2:
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
-                metrics = cifar_cnn.get_metrics()
+                metrics = mri_cnn.get_metrics()
                 st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metrics.get('f1_score') or 'None available'}</span>",
                             unsafe_allow_html=True)
                 st.markdown(f"<br/>Accuracy metric:<br/> <span class='metriclabel'>{metrics.get('accuracy_score') or 'None available'}</span>",
