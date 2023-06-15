@@ -11,3 +11,5 @@ app/analytics/__pycache__/
 cifar10
 app.log
 cifar10.parquet
+data/
+data.zip
