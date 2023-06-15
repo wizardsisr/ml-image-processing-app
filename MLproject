@@ -1,28 +1,29 @@
-name: cifar_img_processing_pipeline
+name: mri_img_processing_pipeline
 
 entry_points:
   upload_dataset:
     parameters:
-        dataset-name: {default: "cifar10"}
-    command: 'python -c "from app.analytics import cifar_cnn, mlflow_utils; import mlflow; mlflow_utils.start_new_root_run(); cifar_cnn.upload_dataset(\"{dataset-name}\")"'
+        dataset-name: {default: "mri"}
+        dataset-url: {default: "https://tolatest-temp-resources.s3.us-east-2.amazonaws.com/data.zip"}
+    command: 'python -c "from app.analytics import mri_cnn, mlflow_utils; import mlflow; mlflow_utils.start_new_root_run(); mri_cnn.upload_dataset(\"{dataset-name}\",dataset_url=\"{dataset-url}\")"'
   train_model:
     parameters:
-        dataset-name: {default: "cifar10"}
-        model-name: {default: "cifar_cnn_a"}
+        dataset-name: {default: "mri"}
+        model-name: {default: "mri_cnn_a"}
         model-flavor: {default: "tensorflow"}
         model-stage: {default: "None"}
         epochs: {type: float, default: 10}
-    command: 'python -c "from app.analytics import cifar_cnn; import hickle as hkl; dataset_path=cifar_cnn.download_dataset(\"{dataset-name}\"); data=hkl.load(dataset_path); cifar_cnn.train_model(\"{model-name}\", \"{model-flavor}\", \"{model-stage}\", data, epochs={epochs})"'
+    command: 'python -c "from app.analytics import mri_cnn; import hickle as hkl; dataset_path=mri_cnn.download_dataset(\"{dataset-name}\"); data=hkl.load(dataset_path); mri_cnn.train_model(\"{model-name}\", \"{model-flavor}\", \"{model-stage}\", data, epochs={epochs})"'
   evaluate_model:
     parameters:
-        dataset-name: {default: "cifar10"}
-        model-name: {default: "cifar_cnn_a"}
+        dataset-name: {default: "mri"}
+        model-name: {default: "mri_cnn_a"}
         model-flavor: {default: "tensorflow"}
-    command: 'python -c "from app.analytics import cifar_cnn; cifar_cnn.evaluate_model(\"{model-name}\", \"{model-flavor}\")"'
+    command: 'python -c "from app.analytics import mri_cnn; mri_cnn.evaluate_model(\"{model-name}\", \"{model-flavor}\")"'
   promote_model_to_staging:
     parameters:
-        base_model-name: {default: "cifar_cnn"}
-        candidate-model-name: {default: "cifar_cnn_a"}
-        dataset-name: {default: "cifar10"}
+        base_model-name: {default: "mri_cnn"}
+        candidate-model-name: {default: "mri_cnn_a"}
+        dataset-name: {default: "mri"}
         model-flavor: {default: "tensorflow"}
-    command: 'python -c "from app.analytics import cifar_cnn; cifar_cnn.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")"'
+    command: 'python -c "from app.analytics import mri_cnn; mri_cnn.promote_model_to_staging(\"{base_model-name}\", \"{candidate-model-name}\", \"{dataset-name}\", \"{model-flavor}\")"'

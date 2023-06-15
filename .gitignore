@@ -13,3 +13,7 @@ cifar10.parquet
 app.log
 tmp.yaml
 tmp.json
+*.hkl
+*.parquet
+data.zip
+data
