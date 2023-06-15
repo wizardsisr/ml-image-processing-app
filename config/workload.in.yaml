@@ -2,10 +2,10 @@
 apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
-  name: image-processor
+  name: image-processor-mri
   labels:
     apps.tanzu.vmware.com/workload-type: web
-    app.kubernetes.io/part-of: image-processor
+    app.kubernetes.io/part-of: image-processor-mri
     apis.apps.tanzu.vmware.com/register-api: "true"
   annotations:
     autoscaling.knative.dev/minScale: "1"
@@ -19,7 +19,7 @@ spec:
         type: openapi
         location:
           path: "/app/static/openapi.json"
-          baseUrl: "https://image-processor-api.default.${DATA_E2E_BASE_URL}"
+          baseUrl: "https://image-processor-api-mri.default.${DATA_E2E_BASE_URL}"
         system: image-processors
         owner: team-image-processors
         description: "A set of API endpoints for the ML Image Processing Demo App."
@@ -32,4 +32,4 @@ spec:
     git:
       url: https://github.com/agapebondservant/ml-image-processing-app.git
       ref:
-        branch: main
+        branch: mainmri
