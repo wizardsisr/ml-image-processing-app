@@ -44,4 +44,5 @@ kfp==1.8.19
 python-multipart
 pyservicebinding
 download_and_extract
+altair==4.0
 .
