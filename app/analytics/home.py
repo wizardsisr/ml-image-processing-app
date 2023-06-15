@@ -57,7 +57,7 @@ with tab1:
             placeholder = st.empty()
             placeholder.header("Loading model...")
             with placeholder.container():
-                prediction = cifar_cnn_greenplum.predict(cifar_img, config.model_name, config.model_stage)
+                prediction = cifar_cnn_greenplum.predict(cifar_img, config.model_name_cifar, config.model_stage)
                 if prediction:
                     st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                                 unsafe_allow_html=True)
@@ -80,7 +80,7 @@ with tab2:
         with col1:
             st.image(mri_img, width=200)
         with col2:
-            prediction = mri_cnn.predict(mri_img, config.model_name, config.model_stage)  # TODO: Use In-DB MRI Model
+            prediction = mri_cnn.predict(mri_img, config.model_name_mri, config.model_stage)  # TODO: Use In-DB MRI Model
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)

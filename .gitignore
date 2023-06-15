@@ -11,4 +11,6 @@ app/analytics/__pycache__/
 cifar10
 app.log
 cifar10.parquet
-config/argo-workflow-http-proxy.yaml
+config/argo-workflow-http-proxy.yamldata
+data.zip
+data/
