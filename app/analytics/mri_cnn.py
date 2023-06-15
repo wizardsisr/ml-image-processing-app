@@ -306,7 +306,7 @@ def predict(img, model_name, model_stage):
         traceback.print_exc()
         return None
 
-    labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+    labels = ['no', 'yes']
 
     img = img.resize((32, 32))
     img = img_to_array(img)

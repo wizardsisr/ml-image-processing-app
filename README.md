@@ -67,12 +67,14 @@ tanzu apps workload delete image-processor --yes
 
 * Deploy the pipeline:
 ```
-kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT> -f config/cifar/pipeline_app.yaml --logs -y  -nargo
+kapp deploy -a image-procesor-pipeline-<THE PIPELINE ENVIRONMENT>-mri -f config/mri/pipeline_app.yaml --logs -y  -nargo
 ```
 
 * View progress:
 ```
 kubectl get app ml-image-processing-pipeline-<THE PIPELINE ENVIRONMENT> -oyaml  -nargo
+OR
+watch kubectl get pods -n argo
 ```
 
 * View the pipeline in the browser by navigating to https://argo-workflows.<your-domain-name> -
