@@ -42,6 +42,9 @@ from mlflow.models import MetricThreshold
 from app.analytics import mlflow_utils
 from evidently.test_suite import TestSuite
 from evidently.test_preset import MulticlassClassificationTestPreset
+import tensorflow as tf
+import numpy as np
+from download_and_extract import Fetcher
 
 
 # ## Upload dataset
@@ -57,9 +60,31 @@ def upload_dataset(dataset, dataset_url=None, to_parquet=False):
         logging.info(f'Artifact run id is {artifact_run_id}')
 
         client = MlflowClient()
+        fetcher = Fetcher()
+        fetcher.fetch(url=dataset_url, path='data')
 
-        mod = importlib.import_module(f'tensorflow.keras.datasets.{dataset}')
-        (training_data, training_labels), (test_data, test_labels) = mod.load_data()
+        train_ds = tf.keras.utils.image_dataset_from_directory(
+            'data/data/Training',
+            label_mode='binary',
+            shuffle=False,
+            seed=123,
+            image_size=(32, 32),
+            batch_size=4)
+        train_ds = train_ds.unbatch()
+        training_data = np.asarray(list(train_ds.map(lambda x, y: x)))
+        training_labels = np.asarray(list(train_ds.map(lambda x, y: y)))
+
+        test_ds = tf.keras.utils.image_dataset_from_directory(
+            'data/data/Testing',
+            label_mode='binary',
+            shuffle=False,
+            seed=123,
+            image_size=(32, 32),
+            batch_size=4)
+        test_ds = test_ds.unbatch()
+        test_data = np.asarray(list(test_ds.map(lambda x, y: x)))
+        test_labels = np.asarray(list(test_ds.map(lambda x, y: y)))
+
         training_data, test_data = training_data / 255.0, test_data / 255.0
 
         hkl.dump({'training_data': training_data,
