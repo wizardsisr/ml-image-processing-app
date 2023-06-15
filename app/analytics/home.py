@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-from app.analytics import config, cifar_cnn
+from app.analytics import config, cifar_cnn, mri_cnn
 from streamlit_autorefresh import st_autorefresh
 import logging
 
@@ -80,11 +80,11 @@ with tab2:
         with col1:
             st.image(mri_img, width=200)
         with col2:
-            prediction = cifar_cnn.predict(mri_img, config.model_name, config.model_stage)  # TODO: Use MRI Model
+            prediction = mri_cnn.predict(mri_img, config.model_name, config.model_stage)
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
-                metrics = cifar_cnn.get_metrics()
+                metrics = mri_cnn.get_metrics()
                 st.markdown(f"<br/>F-1 metric:<br/> <span class='metriclabel'>{metrics.get('f1_score') or 'None available'}</span>",
                             unsafe_allow_html=True)
                 st.markdown(f"<br/>Accuracy metric:<br/> <span class='metriclabel'>{metrics.get('accuracy_score') or 'None available'}</span>",
