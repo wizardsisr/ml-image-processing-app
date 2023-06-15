@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-from app.analytics import config, cifar_cnn, cifar_cnn_greenplum
+from app.analytics import config, cifar_cnn, mri_cnn, cifar_cnn_greenplum
 from streamlit_autorefresh import st_autorefresh
 import logging
 
@@ -80,7 +80,7 @@ with tab2:
         with col1:
             st.image(mri_img, width=200)
         with col2:
-            prediction = cifar_cnn.predict(mri_img, config.model_name, config.model_stage)  # TODO: Use MRI Model
+            prediction = mri_cnn.predict(mri_img, config.model_name, config.model_stage)  # TODO: Use In-DB MRI Model
             if prediction:
                 st.markdown(f"Predicted Label:<br/> <span class='predictedlabel'>{prediction}</span>",
                             unsafe_allow_html=True)
