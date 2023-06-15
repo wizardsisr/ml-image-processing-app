@@ -43,4 +43,5 @@ pysqlite3-binary
 kfp==1.8.19
 python-multipart
 pyservicebinding
+download_and_extract
 .
