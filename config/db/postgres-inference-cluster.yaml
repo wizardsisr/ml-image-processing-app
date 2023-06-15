@@ -12,3 +12,6 @@ spec:
     enabled: false
   seccompProfile:
     type: Unconfined
+  customConfig:
+    postgresql:
+      name: pginstance-inference-configmap
