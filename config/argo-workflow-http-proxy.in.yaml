@@ -4,7 +4,7 @@ metadata:
   name: argo-workflow-httpproxy
 spec:
   virtualhost:
-    fqdn: argo-workflows.${DATA_E2E_BASE_URL}
+    fqdn: argo-workflows.tap-basic.egedsoft.co.il
     tls:
       passthrough: true
   tcpproxy:
