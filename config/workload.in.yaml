@@ -30,6 +30,6 @@ spec:
       value: true
   source:
     git:
-      url: https://github.com/agapebondservant/ml-image-processing-app.git
+      url: https://github.com/wizardsisr/ml-image-processing-app.git
       ref:
         branch: main
