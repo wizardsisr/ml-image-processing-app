@@ -7,7 +7,7 @@ spec:
   fetch:
     - git:
         url: https://github.com/wizardsisr/ml-image-processing-app
-        ref: origin/main
+        ref: origin/staging
 
   template:
     - ytt:
