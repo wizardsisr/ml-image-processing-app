@@ -55,7 +55,8 @@ spec:
       container:
         image: oawofolu/ml-image-processor
         env: 
-          - MLFLOW_TRACKING_URI=http://mlflow.tap-basic.egedsoft.co.il
+          - name: MLFLOW_TRACKING_URI
+            value: http://mlflow.tap-basic.egedsoft.co.il
         command: [python]
         args:
           - ./app/main.py
