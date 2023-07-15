@@ -57,6 +57,7 @@ spec:
         command: [python]
         args:
           - ./app/main.py
+          - MLFLOW_TRACKING_URI=http://mlflow.tap-basic.egedsoft.co.il
           - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
           - mlflow_stage="{{inputs.parameters.mlflow_stage}}"
           - git_repo="{{inputs.parameters.git_repo}}"
