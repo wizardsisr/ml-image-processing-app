@@ -63,7 +63,8 @@ tanzu apps workload delete image-processor --yes
 
 ## Deploy the Training Pipeline
 * cd to </root/of/branch/directory/with/appropriate/model/stage> 
-(Example: the **main** github branch represents the "main" environment, the **staging** github branch represents the "staging" environment, etc)
+(Example: the **main** github branch represents the "main" environment, the **staging** github branch represents the "
+" environment, etc)
 
 * Deploy the pipeline:
 ```
