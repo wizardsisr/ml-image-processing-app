@@ -56,7 +56,8 @@ spec:
         image: oawofolu/ml-image-processor
         env: 
           - name: MLFLOW_TRACKING_URI
-            value: http://mlflow.tap-basic.egedsoft.co.il
+            value: http://mlflow.tanzumlai.com/ 
+            #http://mlflow.tap-basic.egedsoft.co.il
           - name: MLFLOW_S3_ENDPOINT_URL
             value: http://minio.tap-basic.egedsoft.co.il
           - name: HDF5_USE_FILE_LOCKING
