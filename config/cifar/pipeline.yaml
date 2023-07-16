@@ -60,7 +60,7 @@ spec:
           - name: MLFLOW_S3_ENDPOINT_URL
             value: http://minio.tap-basic.egedsoft.co.il
           - name: HDF5_USE_FILE_LOCKING
-            value: FALSE            
+            value: "FALSE            ""
         command: [python]
         args:
           - ./app/main.py
