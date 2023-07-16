@@ -52,6 +52,8 @@ spec:
             value: #@ data.values.experiment_name
           - name: environment_name
             value: #@ data.values.environment_name
+      imagePullSecrets:
+        - name: regcred
       container:
         image: tapwizardsecrbasic.azurecr.io/ml-image-processor
         env: 
