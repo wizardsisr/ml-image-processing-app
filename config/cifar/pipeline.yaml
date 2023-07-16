@@ -5,8 +5,6 @@ kind: Workflow
 metadata:
   name: ml-image-processing-workflow
 spec:
-  imagePullSecrets:
-    - name: regcred
   entrypoint: train
   templates:
     - name: train
@@ -55,7 +53,7 @@ spec:
           - name: environment_name
             value: #@ data.values.environment_name
       container:
-        image: tapwizardsecrbasic.azurecr.io/ml-image-processor
+        image: oawofolu/ml-image-processor
         env: 
           - name: MLFLOW_TRACKING_URI_VAL
             value: http://mlflow.tanzumlai.com
