@@ -57,11 +57,11 @@ spec:
         command: [python]
         env: 
           - name: MLFLOW_TRACKING_URI_VAL
-            value: http://mlflow.tap-basic.egedsoft.co.il
+            value: http://20.23.152.206:5000
           - name: MLFLOW_S3_ENDPOINT_URL_VAL
             value: http://minio.tap-basic.egedsoft.co.il
           - name: MLFLOW_TRACKING_URI
-            value: http://mlflow.tap-basic.egedsoft.co.il
+            value: http://20.23.152.206:5000
           - name: MLFLOW_S3_ENDPOINT_URL
             value: http://minio.tap-basic.egedsoft.co.il        
         args:
