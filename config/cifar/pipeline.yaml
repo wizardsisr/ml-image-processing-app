@@ -53,7 +53,7 @@ spec:
           - name: environment_name
             value: #@ data.values.environment_name
       container:
-        image: oawofolu/ml-image-processor
+        image: tapwizardsecrbasic.azurecr.io/ml-image-processor
         env: 
           - name: MLFLOW_TRACKING_URI_VAL
             value: http://mlflow.tanzumlai.com
