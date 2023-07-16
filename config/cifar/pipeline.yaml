@@ -54,13 +54,6 @@ spec:
             value: #@ data.values.environment_name
       container:
         image: oawofolu/ml-image-processor
-        env: 
-          - name: MLFLOW_TRACKING_URI
-            value: http://mlflow.tanzumlai.com/ 
-          - name: MLFLOW_S3_ENDPOINT_URL
-            value: http://minio.tap-basic.egedsoft.co.il
-          - name: HDF5_USE_FILE_LOCKING
-            value: 'false'
         command: [python]
         args:
           - ./app/main.py
