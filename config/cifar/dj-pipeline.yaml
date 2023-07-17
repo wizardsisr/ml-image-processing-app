@@ -1,0 +1,70 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: ml-image-processing-workflow
+spec:
+  entrypoint: train
+  templates:
+    - name: train
+      steps:
+        - - name: upload-dataset
+            template: main
+            arguments:
+              parameters:
+                - name: mlflow_entry
+                  value: "upload_dataset"
+                - name: mlflow_stage
+                  value: Staging
+        - - name: train-model
+            template: main
+            arguments:
+              parameters:
+                - name: mlflow_entry
+                  value: "train_model"
+                - name: mlflow_stage
+                  value: Staging
+        - - name: evaluate-model
+            template: main
+            arguments:
+              parameters:
+                - name: mlflow_entry
+                  value: "evaluate_model"
+                - name: mlflow_stage
+                  value: Staging
+        - - name: promote-model-to-staging
+            template: main
+            arguments:
+              parameters:
+                - name: mlflow_entry
+                  value: "promote_model_to_staging"
+                - name: mlflow_stage
+                  value: Staging
+    - name: main
+      inputs:
+        parameters:
+          - name: mlflow_entry
+          - name: mlflow_stage
+          - name: git_repo
+            value: https://github.com/wizardsisr/ml-image-processing-app.git
+          - name: experiment_name
+            value: convolutional_neural_network_team_a
+          - name: environment_name
+            value: main
+      container:
+        image: oawofolu/ml-image-processor
+        command: [python]
+        env: 
+          - name: MLFLOW_S3_ENDPOINT_URL
+            value: http://minio.tap-basic.egedsoft.co.il  
+
+          - name: MLFLOW_TRACKING_URI
+            value: http://51.124.128.123:5000
+     
+        args:
+          - ./app/main.py
+          - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
+          - mlflow_stage="{{inputs.parameters.mlflow_stage}}"
+          - git_repo="{{inputs.parameters.git_repo}}"
+          - experiment_name="{{inputs.parameters.experiment_name}}"
+          - environment_name="{{inputs.parameters.environment_name}}"
