@@ -57,10 +57,10 @@ spec:
         command: [python]
         env: 
           - name: MLFLOW_TRACKING_URI_VAL
-            value: http://51.124.128.123:5000
+            value: http://mlflow-server-service.mlflow-system.svc.cluster.local:5000
 
           - name: MLFLOW_TRACKING_URI
-            value: http://51.124.128.123:5000
+            value: http://minio.tap-basic.egedsoft.co.il
      
         args:
           - ./app/main.py

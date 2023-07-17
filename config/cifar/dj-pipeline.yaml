@@ -48,7 +48,7 @@ spec:
           - name: git_repo
             value: https://github.com/wizardsisr/ml-image-processing-app.git
           - name: experiment_name
-            value: convolutional_neural_network_team_a
+            value: convolutional_neural_network_team_ab
           - name: environment_name
             value: main
       container:
