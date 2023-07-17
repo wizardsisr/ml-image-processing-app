@@ -8,6 +8,8 @@ spec:
     - git:
         url: https://github.com/wizardsisr/ml-image-processing-app
         ref: origin/main
+        secretRef:
+          name: github-secret
 
   template:
     - ytt:
