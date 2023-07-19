@@ -54,7 +54,16 @@ spec:
             value: #@ data.values.environment_name
       container:
         image: oawofolu/ml-image-processor
-        command: [python]    
+        command: [python]
+        env: 
+          - name: MLFLOW_TRACKING_URI_VAL
+            value: http://mlflow.tap-test.egedsoft.co.il
+          - name: MLFLOW_S3_ENDPOINT_URL_VAL
+            value: http://minio.tap-test.egedsoft.co.il
+          - name: MLFLOW_TRACKING_URI
+            value: http://mlflow.tap-test.egedsoft.co.il
+          - name: MLFLOW_S3_ENDPOINT_URL
+            value: http://minio.tap-test.egedsoft.co.il        
         args:
           - ./app/main.py
           - mlflow_entry="{{inputs.parameters.mlflow_entry}}"
